@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import Erik.OnlineSong.Repository.UserRepository;
 
 @Service
-public class UserDetailsImp implements UserDetailsService {
+public class UserDetailsServiceImp implements UserDetailsService {
 
     private final UserRepository repository;
 
-    public UserDetailsImp(UserRepository repository) {
+    public UserDetailsServiceImp(UserRepository repository) {
         this.repository = repository;
     }
 
