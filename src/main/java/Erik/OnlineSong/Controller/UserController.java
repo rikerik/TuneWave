@@ -8,11 +8,9 @@ import Erik.OnlineSong.Repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class UserController {
 
@@ -28,8 +26,8 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public Optional<User> getUsers(@PathVariable("id") Integer id) {
-        return repository.findById(id);
+    public Optional<User> getUsers(@PathVariable("id") String id) {
+        return repository.findById(Integer.parseInt(id));
     }
 
 }

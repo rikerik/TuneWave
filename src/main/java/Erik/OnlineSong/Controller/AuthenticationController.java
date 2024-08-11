@@ -3,6 +3,7 @@ package Erik.OnlineSong.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import Erik.OnlineSong.Model.AuthenticationResponse;
+import Erik.OnlineSong.Model.Role;
 import Erik.OnlineSong.Model.User;
 import Erik.OnlineSong.Service.AuthenticationService;
 
@@ -22,7 +23,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody User request) {
-
+        request.setRole(Role.USER); // set default role to USER
         return ResponseEntity.ok(service.register(request));
     }
 
