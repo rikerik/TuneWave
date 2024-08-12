@@ -1,10 +1,10 @@
 import React from "react";
 import LoginForm from "../components/LoginForm";
 
+// Component for rendering the login page
 const LoginPage = () => {
   return (
     <div>
-      <h1>Login</h1>
       <LoginForm />
     </div>
   );

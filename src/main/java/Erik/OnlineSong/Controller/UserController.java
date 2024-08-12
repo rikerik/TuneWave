@@ -27,6 +27,8 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public Optional<User> getUsers(@PathVariable("id") String id) {
+        // TODO
+        // If I add an id to the url its not working
         return repository.findById(Integer.parseInt(id));
     }
 
