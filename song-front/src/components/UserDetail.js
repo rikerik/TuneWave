@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getUserById } from "../services/UserService";
 import { useParams } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader"; // Import a spinner component from react-spinners
 
 // Component for displaying details of a specific user
 const UserDetail = () => {
@@ -10,7 +11,7 @@ const UserDetail = () => {
   // Fetch user details when the component mounts or ID changes
   useEffect(() => {
     fetchUser();
-  });
+  }, [id]);
 
   // Function to fetch user details from the API and update state
   const fetchUser = async () => {
@@ -20,28 +21,30 @@ const UserDetail = () => {
 
   return (
     <div className="container mt-5">
+      <h2 className="mb-4">User Detail</h2>
       {user ? (
-        <div className="card">
-          <div className="card-header">
-            <h2 className="card-title">User Detail</h2>
-          </div>
-          <div className="card-body">
-            <p className="card-text">
-              <strong>Username:</strong> {user.username}
-            </p>
-            <p className="card-text">
-              <strong>Last Name:</strong> {user.lastName}
-            </p>
-            <p className="card-text">
-              <strong>First Name:</strong> {user.firstName}
-            </p>
-            <p className="card-text">
-              <strong>ID:</strong> {user.id}
-            </p>
-          </div>
-        </div>
+        <table className="table table-bordered">
+          <thead className="thead-dark">
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{user.id}</td>
+              <td>{user.username}</td>
+              <td>{user.firstName}</td>
+              <td>{user.lastName}</td>
+            </tr>
+          </tbody>
+        </table>
       ) : (
-        <p>Loading...</p>
+        <div className="d-flex justify-content-center">
+          <ClipLoader color="#000" size={50} />
+        </div>
       )}
     </div>
   );
