@@ -21,10 +21,10 @@ const LoginForm = () => {
       console.log("Login response:", response); // Log the response from the login request
 
       if (response.status === 200) {
-        // On successful login, save the token to local storage
+        // On successful login, save the token to session storage
         const { token } = response.data;
-        localStorage.setItem("token", token);
-        console.log("Token saved:", localStorage.getItem("token")); // Log the saved token
+        sessionStorage.setItem("token", token);
+        console.log("Token saved:", sessionStorage.getItem("token")); // Log the saved token
         console.log("Attempting to navigate to /users");
         navigate("/users"); // Redirect to the user list page upon successful login
       } else {

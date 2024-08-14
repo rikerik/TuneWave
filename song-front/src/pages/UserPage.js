@@ -1,16 +1,18 @@
 import React from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import UserList from "../components/UserList";
 import UserDetail from "../components/UserDetail";
-import { Route, Routes } from "react-router-dom";
 
 // Component to handle routing for user related pages
-const UserPage = () => (
-  <div>
-    <Routes>
-      <Route path="/" element={<UserList />} />
-      <Route path="/:id" element={<UserDetail />} />
-    </Routes>
-  </div>
-);
+const UserPage = () => {
+  return (
+    <div>
+      <Routes>
+        <Route path="/" element={<UserList />} />
+        <Route path="/:id" element={<UserDetail />} />
+      </Routes>
+    </div>
+  );
+};
 
 export default UserPage;
