@@ -14,9 +14,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "user")
 @Data
@@ -41,6 +46,10 @@ public class User implements UserDetails {
 
     @Enumerated(value = EnumType.STRING) // Specifying that that role field is an enum, it will be a string in the db
     private Role role;
+
+    // One user can have multiple tokens
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

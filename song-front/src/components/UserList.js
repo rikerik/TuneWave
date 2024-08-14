@@ -12,8 +12,23 @@ const UserList = () => {
 
   // Function to fetch users from the API and update state
   const fetchUsers = async () => {
-    const response = await getAllUsers(); // Call the service function to get users
-    setUsers(response.data); // Update state with the fetched users
+    try {
+      const response = await getAllUsers();
+
+      // Parse the JSON string if the response data is a string
+      let usersData = response.data;
+      if (typeof usersData === "string") {
+        usersData = JSON.parse(usersData); // Parse the string to an array
+      }
+
+      if (Array.isArray(usersData)) {
+        setUsers(usersData);
+      } else {
+        console.error("Expected an array of users but got:", usersData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    }
   };
 
   return (

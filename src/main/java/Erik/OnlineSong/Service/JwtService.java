@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import Erik.OnlineSong.Model.User;
+import Erik.OnlineSong.Repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -22,6 +23,12 @@ public class JwtService {
     // Key expires and logging in is impossible, should generate this automatically
     // or delete the token, have to check the proper way
     private static final String SECRET_KEY = "2bdcd096b8e5997403cc854c7894161f2fd24d38139c3417f4b3d28c7ed47557";
+
+    private final TokenRepository tokenRepository;
+
+    public JwtService(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     /**
      * 
@@ -43,7 +50,11 @@ public class JwtService {
      */
     public boolean isValid(String token, UserDetails user) {
         String username = extractUsername(token);
-        return username.equals(user.getUsername()) && !isTokenExpired(token);
+
+        boolean isValidToken = tokenRepository.findByToken(token)
+                .map(t -> !t.isLoggedOut()).orElse(false);
+
+        return username.equals(user.getUsername()) && !isTokenExpired(token) && isValidToken;
     }
 
     /**
