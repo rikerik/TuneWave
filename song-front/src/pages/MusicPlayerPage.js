@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import TrackList from "../components/Music/TrackList";
 import Player from "../components/Music/Player";
-import { Container, Row, Col, Navbar, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Container, Row, Col } from "react-bootstrap";
 import api from "../api/api";
-import LogoutButton from "../components/common/Logout";
+import NavBar from "../components/common/Navbar";
 
 const MusicPlayerPage = () => {
   // State variable to keep track of the currently selected track index
@@ -43,23 +42,7 @@ const MusicPlayerPage = () => {
 
   return (
     <div>
-      {/* Navigation Bar */}
-      <Navbar bg="dark" variant="dark" expand="lg">
-        <Navbar.Brand href="#" className="ms-3">
-          TuneWave
-        </Navbar.Brand>
-        <Nav className="mr-auto">
-          <Nav.Link as={Link} to="/users">
-            Users
-          </Nav.Link>
-          <Nav.Link as={Link} to="/music">
-            Music Player
-          </Nav.Link>
-        </Nav>
-        <Nav className="ms-auto">
-          <LogoutButton />
-        </Nav>
-      </Navbar>
+      <NavBar />
 
       {/* Main Content */}
       <Container fluid>

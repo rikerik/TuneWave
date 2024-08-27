@@ -13,7 +13,6 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/users/*" element={<UserPage />} />
         <Route path="/music" element={<MusicPlayerPage />} />{" "}
-        {/* Add this route */}
       </Routes>
     </Router>
   );
