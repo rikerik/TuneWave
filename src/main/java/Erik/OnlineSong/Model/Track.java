@@ -41,4 +41,7 @@ public class Track {
     @Column(name = "location")
     private String location;
 
+    @Column(name = "image")
+    private String image;
+
 }

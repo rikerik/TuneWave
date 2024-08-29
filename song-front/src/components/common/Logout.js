@@ -17,7 +17,11 @@ const LogoutButton = () => {
   };
 
   return (
-    <button onClick={logout} type="button" class="btn btn-outline-light me-3">
+    <button
+      onClick={logout}
+      type="button"
+      className="btn btn-outline-light me-3"
+    >
       Logout
     </button>
   );

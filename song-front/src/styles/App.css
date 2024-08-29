@@ -1,0 +1,16 @@
+/* src/App.css */
+.music-controller {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.controls input[type="range"] {
+    width: 100px;
+}
+
+.time-info {
+    margin: 0 10px;
+    white-space: nowrap;
+}

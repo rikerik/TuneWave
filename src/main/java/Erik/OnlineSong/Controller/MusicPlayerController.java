@@ -34,11 +34,15 @@ public class MusicPlayerController {
 
     @GetMapping("/tracks/{id}")
     public ResponseEntity<Resource> getTrack(@PathVariable Integer id) {
-        Track currentTrack = trackRepository.findById(id).get();
-        Path path = Paths.get(currentTrack.getLocation());
-        Resource resource = new FileSystemResource(path);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+        // Check if the track exists
+        return trackRepository.findById(id)
+                .map(track -> {
+                    Path path = Paths.get(track.getLocation());
+                    Resource resource = new FileSystemResource(path);
+                    return ResponseEntity.ok()
+                            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                            .body(resource);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }
