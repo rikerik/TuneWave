@@ -10,10 +10,34 @@ const HomePage = () => {
   const [tracks, setTracks] = useState([]);
   //Sample playlist
   const playlists = [
-    { id: 1, title: "Top Hits", description: "The best tracks right now" },
-    { id: 2, title: "Chill Vibes", description: "Relax with these tracks" },
-    { id: 3, title: "Workout", description: "Get pumped up" },
-    { id: 4, title: "Focus", description: "Stay focused with these beats" },
+    {
+      id: 1,
+      title: "Top Hits",
+      description: "The best tracks right now",
+      imageUrl:
+        "https://i.scdn.co/image/ab67616d0000b273674ee85ea544f17b5726c54b",
+    },
+    {
+      id: 2,
+      title: "Chill Vibes",
+      description: "Relax with these tracks",
+      imageUrl:
+        "https://i.scdn.co/image/ab67616d0000b27395ce36c00a2f3ed2f6436ebf",
+    },
+    {
+      id: 3,
+      title: "Workout",
+      description: "Get pumped up",
+      imageUrl:
+        "https://i0.wp.com/www.muscleandfitness.com/wp-content/uploads/2019/07/Hands-Clapping-Chaulk-Kettlebell.jpg?quality=86&strip=all",
+    },
+    {
+      id: 4,
+      title: "Focus",
+      description: "Stay focused with these beats",
+      imageUrl:
+        "https://i.scdn.co/image/ab67616d0000b2739903dde25dafb8ae0d0d7c34",
+    },
   ];
 
   //Fetching tracks
@@ -46,8 +70,10 @@ const HomePage = () => {
               {playlists.map((playlist) => (
                 <div className="col-md-3 mb-3" key={playlist.id}>
                   <PlaylistCard
+                    id={playlist.id} // Pass the ID to PlaylistCard
                     title={playlist.title}
                     description={playlist.description}
+                    imageUrl={playlist.imageUrl}
                   />
                 </div>
               ))}
