@@ -27,8 +27,8 @@ This application is an online song player that combines a React frontend with a 
    git clone https://github.com/rikerik/OnlineSong.git
    ```
 
-2. Navigate to backend directory
-   cd backend
+2. Navigate to directory
+   cd OnlineSong
 
 3. Install dependencies and build project:
    nvm install
