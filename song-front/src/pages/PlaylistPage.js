@@ -1,17 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { getTracksByPlaylistId } from "../api/musicApi";
 import SongCard from "../components/common/SongCard";
 
-const PlaylistPage = () => {
-  const { id } = useParams(); // Get playlist ID from the URL
+const PlaylistPage = ({ playlistId }) => {
   const [tracks, setTracks] = useState([]);
 
+  useEffect(() => {
+    const fetchTracks = async () => {
+      try {
+        const response = await getTracksByPlaylistId(playlistId);
+        setTracks(response.data);
+      } catch (error) {
+        console.error("Error fetching tracks for playlist:", error);
+      }
+    };
+
+    fetchTracks();
+  }, [playlistId]);
+
   return (
-    <div className="container mt-4">
-      <h3>Playlist Songs</h3>
+    <div>
+      <h5>Tracks</h5>
       <div className="row">
         {tracks.map((track) => (
-          <div className="col-md-3 mb-3" key={track.id}>
+          <div className="col-md-2 mb-3" key={track.id}>
             <SongCard
               title={track.title}
               artist={track.artist}
