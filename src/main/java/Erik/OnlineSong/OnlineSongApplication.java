@@ -21,7 +21,7 @@ public class OnlineSongApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// Music folder
-		String musicFolderPath = "\\Music";
+		String musicFolderPath = "\\src\\main\\resources\\Music";
 		playlistLoaderService.loadPlaylists(musicFolderPath);
 
 	}

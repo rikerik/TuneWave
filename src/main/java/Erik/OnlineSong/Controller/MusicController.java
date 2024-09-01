@@ -35,12 +35,20 @@ public class MusicController {
 
     @GetMapping("/tracks")
     public ResponseEntity<List<Track>> getAllTracks() {
-        return ResponseEntity.ok(trackRepository.findAll());
+        List<Track> tracks = trackRepository.findAll();
+        for (Track track : tracks) {
+            track.encodeImageToBase64(); // Convert image to Base64 for each track
+        }
+        return ResponseEntity.ok(tracks);
     }
 
-    @GetMapping("/playlists/{playlistId}/tracks")
-    public List<Track> getTracksByPlaylistId(@PathVariable Integer playlistId) {
-        return trackRepository.findByPlaylistId(playlistId);
+    @GetMapping("/tracks/playlist/{playlistId}")
+    public ResponseEntity<List<Track>> getTracksByPlaylistId(@PathVariable Integer playlistId) {
+        List<Track> tracks = trackRepository.findByPlaylistId(playlistId);
+        for (Track track : tracks) {
+            track.encodeImageToBase64(); // Convert image to Base64
+        }
+        return ResponseEntity.ok(tracks);
     }
 
     @GetMapping("/tracks/{id}")
@@ -56,4 +64,5 @@ public class MusicController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
 }

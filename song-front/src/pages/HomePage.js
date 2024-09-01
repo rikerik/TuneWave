@@ -32,11 +32,11 @@ const HomePage = () => {
       <Navbar />
 
       <div className="row flex-grow-1">
-        <Sidebar className="col-md-2 bg-dark text-light p-3" />
+        <Sidebar className="col-md-1 bg-dark text-light p-3" />
 
-        <div className="col-md-10">
+        <div className="col-md-11">
           <div className="mt-4">
-            <h5 className="mb-3">Featured Playlists</h5>
+            <h5 className="mb-3 text-center">Featured Playlists</h5>
             <div className="row">
               {playlists.map((playlist) => (
                 <div className="col-md-3 mb-3" key={playlist.id}>
@@ -49,17 +49,17 @@ const HomePage = () => {
                 </div>
               ))}
             </div>
+            <hr class="border-dark"></hr>
           </div>
-
-          <div className="mt-5">
-            <h5 className="mb-3">Recently Played</h5>
+          <div className="mt-5 mb-5">
+            <h5 className="mb-3 text-center">Recently Played</h5>
             <div className="row">
               {tracks.map((track) => (
-                <div className="col-md-2 mb-3" key={track.id}>
+                <div className="col-md-2 col-lg-2 mb-5" key={track.id}>
                   <SongCard
                     title={track.title}
                     artist={track.artist}
-                    imageUrl={track.image}
+                    imageUrl={track.base64Image}
                     id={track.id}
                   />
                 </div>

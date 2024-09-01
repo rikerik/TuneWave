@@ -1,5 +1,10 @@
 package Erik.OnlineSong.Model;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Base64;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
@@ -42,4 +47,21 @@ public class Track {
     @JoinColumn(name = "playlist_id", nullable = false)
     @JsonBackReference // Prevent infinite recursion
     private Playlist playlist;
+
+    @Transient
+    private String base64Image;
+
+    public void encodeImageToBase64() {
+        if (image != null && !image.isEmpty()) {
+            try {
+                File imageFile = new File(image);
+                FileInputStream fileInputStream = new FileInputStream(imageFile);
+                byte[] imageBytes = fileInputStream.readAllBytes();
+                base64Image = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(imageBytes);
+                fileInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

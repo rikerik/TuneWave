@@ -4,9 +4,10 @@ import { login } from "../services/AuthService";
 
 // Component for handling the user login form
 const LoginForm = () => {
-  // State hooks for form fields
+  // State hooks for form fields and error message
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // State for error message
 
   // Hook for navigation
   const navigate = useNavigate();
@@ -18,20 +19,19 @@ const LoginForm = () => {
     try {
       // Call the login service function with form data
       const response = await login({ username, password });
-      console.log("Login response:", response); // Log the response from the login request
 
       if (response.status === 200) {
         // On successful login, save the token to session storage
         const { token } = response.data;
         sessionStorage.setItem("token", token);
-        console.log("Token saved:", sessionStorage.getItem("token")); // Log the saved token
-        console.log("Attempting to navigate to /users");
-        navigate("/users"); // Redirect to the user list page upon successful login
+        navigate("/home"); // Redirect to the user list page upon successful login
       } else {
-        console.error("Login failed", response.status);
+        // Handle non-successful status codes
+        setError("Invalid username or password"); // Set error message
       }
     } catch (error) {
       console.error("An error occurred during login:", error);
+      setError("An error occurred during login. Please try again."); // Set error message
     }
   };
 
@@ -39,6 +39,11 @@ const LoginForm = () => {
     <div className="container mt-5 w-25">
       <h2 className="mb-4">Login</h2>
       <form onSubmit={handleSubmit}>
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
             Username:

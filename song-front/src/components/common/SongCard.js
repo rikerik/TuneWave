@@ -25,11 +25,4 @@ const SongCard = ({ title, artist, imageUrl, id }) => {
   );
 };
 
-SongCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  artist: PropTypes.string.isRequired,
-  imageUrl: PropTypes.string,
-  id: PropTypes.number.isRequired,
-};
-
 export default SongCard;

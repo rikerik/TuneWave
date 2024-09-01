@@ -31,7 +31,7 @@ const RegisterForm = () => {
         sessionStorage.setItem("token", token);
         console.log("Token saved:", sessionStorage.getItem("token")); // Log the saved token
         console.log("Attempting to navigate to /users");
-        navigate("/users"); // Redirect to the user list page upon successful login
+        navigate("/home"); // Redirect to the user list page upon successful login
       } else {
         console.error("Login failed", response.status);
       }
