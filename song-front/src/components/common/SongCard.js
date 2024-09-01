@@ -28,7 +28,7 @@ const SongCard = ({ title, artist, imageUrl, id }) => {
 SongCard.propTypes = {
   title: PropTypes.string.isRequired,
   artist: PropTypes.string.isRequired,
-  imageUrl: PropTypes.string, // Update propTypes to accept optional imageUrl
+  imageUrl: PropTypes.string,
   id: PropTypes.number.isRequired,
 };
 

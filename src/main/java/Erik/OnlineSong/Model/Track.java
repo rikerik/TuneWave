@@ -40,6 +40,6 @@ public class Track {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "playlist_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference // Prevent infinite recursion
     private Playlist playlist;
 }
