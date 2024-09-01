@@ -36,10 +36,14 @@ export const MusicPlayerProvider = ({ children }) => {
       // Create a URL for the audio data
       const audioUrl = URL.createObjectURL(response.data);
 
-      // Update state with the new track and audio source
+      // Find the index of the new track in the trackList
+      const newIndex = trackList.findIndex((t) => t.id === track.id);
+
+      // Update state with the new track, audio source, and index
       setCurrentTrack(track);
       setAudioSrc(audioUrl);
       setIsPlaying(true);
+      setCurrentTrackIndex(newIndex); // Update the index
     } catch (error) {
       console.error("Error fetching the track:", error);
     }
@@ -72,7 +76,8 @@ export const MusicPlayerProvider = ({ children }) => {
     const fetchTracks = async () => {
       try {
         const response = await getTracks();
-        setTrackList(response.data);
+        // Assuming tracks are sorted by ID or any other property
+        setTrackList(response.data.sort((a, b) => a.id - b.id));
       } catch (error) {
         console.error("Error fetching tracks:", error);
       }
@@ -85,6 +90,7 @@ export const MusicPlayerProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       currentTrack,
+      currentTrackId: currentTrack ? currentTrack.id : null,
       isPlaying,
       playTrack,
       pauseTrack,
