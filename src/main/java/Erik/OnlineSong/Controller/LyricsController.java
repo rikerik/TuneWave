@@ -22,9 +22,9 @@ public class LyricsController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<String> getLyrics(@RequestParam String trackLocation) {
+    public ResponseEntity<String> getLyrics(@RequestParam String audioUrl) {
         try {
-            return ResponseEntity.ok().body(lService.getLyrics(trackLocation));
+            return ResponseEntity.ok().body(lService.getLyrics(audioUrl));
         } catch (Exception e) {
             log.error("Error while fetching lyrics: ", e);
             return ResponseEntity.internalServerError().body("Error while fetching lyrics");

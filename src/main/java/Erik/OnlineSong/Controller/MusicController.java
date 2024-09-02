@@ -58,8 +58,14 @@ public class MusicController {
                 .map(track -> {
                     Path path = Paths.get(track.getLocation());
                     Resource resource = new FileSystemResource(path);
+
+                    MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+                    if (path.toString().endsWith(".mp3")) {
+                        mediaType = MediaType.valueOf("audio/mpeg");
+                    }
+
                     return ResponseEntity.ok()
-                            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                            .contentType(mediaType)
                             .body(resource);
                 })
                 .orElse(ResponseEntity.notFound().build());
