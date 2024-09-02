@@ -27,9 +27,6 @@
 		<tag />
 		<url />
 	</scm>
-	<properties>
-		<java.version>21</java.version>
-	</properties>
 	<dependencies>
 
 
@@ -98,8 +95,20 @@
 			<version>2.0.3</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+
 
 	</dependencies>
+
+	<properties>
+		<java.version>21</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+	</properties>
 
 	<build>
 		<plugins>
