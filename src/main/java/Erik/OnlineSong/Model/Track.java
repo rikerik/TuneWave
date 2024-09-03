@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
@@ -53,11 +55,14 @@ public class Track {
     @Transient
     private String base64Image;
 
+    @Value("ß{${aws.s3.bucket.name}}")
+    private String bucketName;
+
     public void encodeImageToBase64(AmazonS3 s3Client) {
         if (image != null && !image.isEmpty()) {
             try {
                 // Retrieve the image from S3
-                S3Object s3Object = s3Client.getObject(new GetObjectRequest("tunewave", image));
+                S3Object s3Object = s3Client.getObject(new GetObjectRequest(bucketName, image));
                 InputStream inputStream = s3Object.getObjectContent();
                 byte[] imageBytes = inputStream.readAllBytes();
                 base64Image = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(imageBytes);
