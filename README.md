@@ -12,8 +12,8 @@ This application is an online song player that combines a React frontend with a 
 - **Java Backend**: Handles authentication, track management, and API endpoints.
 - **JWT Authentication**: Ensures secure and authenticated access to the application.
 - **Track Playback**: Play tracks seamlessly on every page of the application.
+- **Amazon S3 Integration**: Stores and manages tracks on Amazon S3 for scalability and accessibility.
 - **Future Enhancements**:
-  - **Cloud Storage**: Store and manage tracks on a cloud service for scalability and accessibility.
   - **AI Lyrics Fetching**: Implement AI to dynamically retrieve and display lyrics for the currently playing track.
   - **Visualizer**: Implement visualizer made with p5.js library.
 
