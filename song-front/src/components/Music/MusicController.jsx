@@ -1,5 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useMusicPlayer } from "../context/MusicPlayerContext";
+import { Modal, Button, Spinner } from "react-bootstrap";
+import { FiMusic } from "react-icons/fi";
+import { getLyrics } from "../../api/lyricsApi";
 
 const MusicController = () => {
   const audioRef = useRef(null);
@@ -17,6 +20,9 @@ const MusicController = () => {
   const [volume, setVolume] = useState(0.5);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [showLyrics, setShowLyrics] = useState(false);
+  const [lyrics, setLyrics] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -37,9 +43,9 @@ const MusicController = () => {
       } else {
         audio.pause();
       }
-
       //TODO its skipping a track somewhy when clicking on next
       // Add the ended event listener to play the next track
+
       const handleEnded = () => {
         nextTrack();
       };
@@ -83,6 +89,25 @@ const MusicController = () => {
     }
   };
 
+  const handleShowLyrics = async () => {
+    setShowLyrics(true);
+    setLoading(true);
+
+    try {
+      if (audioSrc) {
+        const response = await getLyrics(audioSrc); // Fetch lyrics using audioSrc
+        setLyrics(response.data.lyrics || "Lyrics not available.");
+      }
+    } catch (error) {
+      console.error("Error fetching lyrics:", error);
+      setLyrics("Lyrics not available.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseLyrics = () => setShowLyrics(false);
+
   return (
     <div className="music-controller bg-dark text-light d-flex justify-content-between align-items-center p-3 fixed-bottom">
       {currentTrack && (
@@ -117,6 +142,13 @@ const MusicController = () => {
               className="mx-2"
               style={{ flex: 1 }}
             />
+            {/* Lyrics Icon */}
+            <FiMusic
+              className="mx-2"
+              size={24}
+              style={{ cursor: "pointer" }}
+              onClick={handleShowLyrics}
+            />
             <div className="time-info mx-2">
               <span>{formatTime(currentTime)}</span> /{" "}
               <span>{formatTime(duration)}</span>
@@ -132,6 +164,29 @@ const MusicController = () => {
               style={{ width: "100px" }}
             />
           </div>
+
+          {/* Modal for Lyrics */}
+          <Modal show={showLyrics} onHide={handleCloseLyrics}>
+            <Modal.Header closeButton>
+              <Modal.Title>Lyrics</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {loading ? (
+                <div className="d-flex justify-content-center">
+                  <Spinner animation="border" role="status">
+                    <span className="sr-only"></span>
+                  </Spinner>
+                </div>
+              ) : (
+                <pre>{lyrics}</pre>
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseLyrics}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </>
       )}
     </div>

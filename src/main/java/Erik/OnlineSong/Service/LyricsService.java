@@ -106,6 +106,7 @@ public class LyricsService {
         }
 
         log.info("Transcription completed");
+        log.info(transcript.getText());
 
         return transcript.getText();
     }
