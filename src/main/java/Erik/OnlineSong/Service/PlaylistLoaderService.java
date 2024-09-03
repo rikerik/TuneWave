@@ -1,16 +1,22 @@
 package Erik.OnlineSong.Service;
 
-import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.TagException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import Erik.OnlineSong.Model.Playlist;
@@ -19,118 +25,207 @@ import Erik.OnlineSong.Repository.PlaylistRepository;
 import Erik.OnlineSong.Repository.TrackRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
+import com.amazonaws.services.s3.model.S3Object;
+
 @Slf4j
 @Service
 public class PlaylistLoaderService {
 
     private final PlaylistRepository playlistRepository;
     private final TrackRepository trackRepository;
+    private final AmazonS3 s3Client;
 
-    public PlaylistLoaderService(PlaylistRepository playlistRepository, TrackRepository trackRepository) {
+    // Providing the bucket name and the subfolder where tracks and other files are
+    // stored
+    @Value("${aws.s3.bucket.name}")
+    private String bucketName;
+
+    @Value("${aws.s3.bucket.music-folder}")
+    private String musicFolderPath;
+
+    public PlaylistLoaderService(PlaylistRepository playlistRepository, TrackRepository trackRepository,
+            AmazonS3 s3Client) {
         this.playlistRepository = playlistRepository;
         this.trackRepository = trackRepository;
+        this.s3Client = s3Client;
     }
 
-    public void loadPlaylists(String musicFolderPath)
-            throws IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException {
+    /**
+     * Loads playlists from the S3 bucket and processes each track in the playlists.
+     *
+     * @throws IOException                If there is an issue reading from the S3
+     *                                    bucket or creating temporary files.
+     * @throws TagException               If there is an issue reading the MP3 tag.
+     * @throws ReadOnlyFileException      If the MP3 file is read-only.
+     * @throws InvalidAudioFrameException If the MP3 file has an invalid audio
+     *                                    frame.
+     */
+    public void loadPlaylists() throws IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException {
+        log.info("Loading playlists from bucket: {}", bucketName);
 
-        String currentPath = System.getProperty("user.dir");
-        log.info("Working directory: " + currentPath);
+        // Create a request to list all directories (playlists) in the S3 bucket
+        ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
+                .withBucketName(bucketName)
+                .withPrefix(musicFolderPath + "/")
+                .withDelimiter("/");
 
-        File musicFolder = new File(currentPath, musicFolderPath);
-        log.info("Loading playlists from directory: " + musicFolder.getAbsolutePath());
+        // Execute the request and retrieve the result
+        ListObjectsV2Result result = s3Client.listObjectsV2(listObjectsRequest);
+        // Extract the common prefixes (directories) from the result
+        List<String> playlistFolders = result.getCommonPrefixes().stream()
+                .collect(Collectors.toList());
 
-        File[] playlistFolders = musicFolder.listFiles(File::isDirectory);
-
-        if (playlistFolders == null || playlistFolders.length == 0) {
-            log.warn("No playlist directories found in: " + musicFolder.getAbsolutePath());
+        // If no playlist directories are found, log a warning and exit
+        if (playlistFolders.isEmpty()) {
+            log.warn("No playlist directories found in bucket path: {}", musicFolderPath);
             return;
         }
 
-        for (File playlistFolder : playlistFolders) {
-            log.info("Processing playlist folder: {}", playlistFolder.getName());
+        // Iterate over each playlist directory
+        for (String playlistFolder : playlistFolders) {
+            log.info("Processing playlist folder: {}", playlistFolder);
 
-            // Load playlist details from the corresponding txt file
-            File playlistInfoFile = new File(playlistFolder, playlistFolder.getName() + ".txt");
-
-            if (!playlistInfoFile.exists()) {
-                log.warn("Playlist info file not found: " + playlistInfoFile.getAbsolutePath());
-                continue;
+            // Ensure the playlistFolder ends with a slash before processing
+            if (!playlistFolder.endsWith("/")) {
+                playlistFolder += "/";
             }
 
-            // There are 2 lines in the txt
-            // First is the description for the playlist
-            // Second is the image link for the playlist
-            List<String> lines = Files.readAllLines(playlistInfoFile.toPath());
-            if (lines.size() < 2) {
-                log.warn("Playlist info file is incomplete: {}", playlistInfoFile.getAbsolutePath());
-                continue;
-            }
+            // Final variable to use inside the lambda
+            final String finalPlaylistFolder = playlistFolder;
 
-            String description = lines.get(0);
-            String imageUrl = lines.get(1);
+            // Extract the playlist title (folder name)
+            String playlistTitle = playlistFolder.substring(
+                    playlistFolder.lastIndexOf('/', playlistFolder.length() - 2) + 1, playlistFolder.length() - 1);
 
-            Playlist playlist = Playlist.builder()
-                    .title(playlistFolder.getName())
-                    .description(description)
-                    .image(imageUrl)
-                    .build();
+            // Construct the correct key for the playlist info file
+            String playlistInfoFile = playlistFolder + playlistTitle + ".txt";
+            playlistInfoFile = playlistInfoFile.replaceAll("//+", "/").replaceFirst("^/+", ""); // Normalize the path
 
-            playlist = playlistRepository.save(playlist);
-            log.info("Saved playlist: {} with ID: {}", playlist.getTitle(), playlist.getId());
+            log.debug("Trying to access playlist info file: {}", playlistInfoFile);
 
-            // Load tracks in this playlist folder
-            File[] trackFiles = playlistFolder.listFiles((dir, name) -> name.endsWith(".mp3"));
+            try {
+                // Retrieve the playlist info file from S3
+                S3Object playlistInfoObject = s3Client.getObject(new GetObjectRequest(bucketName, playlistInfoFile));
+                // Read the content of the playlist info file
+                List<String> lines = new BufferedReader(new InputStreamReader(playlistInfoObject.getObjectContent()))
+                        .lines().collect(Collectors.toList());
 
-            if (trackFiles == null || trackFiles.length == 0) {
-                log.warn("No tracks found in playlist folder: " + playlistFolder.getName());
-                continue;
-            }
-
-            for (File trackFile : trackFiles) {
-                // Extract artist and title from the file name
-                String fileNameWithoutExtension = trackFile.getName().replace(".mp3", "");
-                String[] parts = fileNameWithoutExtension.split(" - ", 2);
-
-                if (parts.length < 2) {
-                    log.warn("File name format is incorrect: " + trackFile.getName());
+                // Check if the playlist info file is complete
+                if (lines.size() < 2) {
+                    log.warn("Playlist info file is incomplete: {}", playlistInfoFile);
                     continue;
                 }
 
-                String artist = parts[0];
-                String title = parts[1];
+                String description = lines.get(0);
+                String imageUrl = lines.get(1);
 
-                // Search for an image file with the same name
-                File[] imageFiles = playlistFolder.listFiles((dir, name) -> name.startsWith(fileNameWithoutExtension)
-                        && (name.endsWith(".jpg") || name.endsWith(".png")));
-
-                String imageLocation = null;
-                if (imageFiles != null && imageFiles.length > 0) {
-                    imageLocation = imageFiles[0].getAbsolutePath();
-                    log.info("Found image for track: {} at {}", trackFile.getName(), imageLocation);
-                } else {
-                    log.info("No image found for track: " + trackFile.getName());
-                }
-
-                log.info("Processing track file: " + trackFile.getName());
-
-                Track track = Track.builder()
-                        .title(title)
-                        .artist(artist)
-                        .location(trackFile.getAbsolutePath())
-                        .playlist(playlist)
-                        .image(imageLocation)
-                        // Using jauditotagger to get length
-                        .length((double) new MP3File(trackFile.getAbsolutePath()).getAudioHeader().getTrackLength())
+                // Save playlist with the correct title
+                Playlist playlist = Playlist.builder()
+                        .title(playlistTitle)
+                        .description(description)
+                        .image(imageUrl)
                         .build();
 
-                trackRepository.save(track);
-                log.info("Saved track: {} by artist: {} for playlist: {}", track.getTitle(), track.getArtist(),
-                        playlist.getTitle());
+                playlist = playlistRepository.save(playlist);
+                log.info("Saved playlist: {} with ID: {}", playlist.getTitle(), playlist.getId());
+
+                // Load tracks in this playlist folder
+                ListObjectsV2Request trackListRequest = new ListObjectsV2Request()
+                        .withBucketName(bucketName)
+                        .withPrefix(playlistFolder);
+                ListObjectsV2Result trackResult = s3Client.listObjectsV2(trackListRequest);
+
+                // Extract track files (MP3 files) from the result
+                List<String> trackFiles = trackResult.getObjectSummaries().stream()
+                        .map(s -> s.getKey())
+                        .filter(key -> key.endsWith(".mp3"))
+                        .collect(Collectors.toList());
+
+                // If no track files are found, log a warning and continue to the next playlist
+                // folder
+                if (trackFiles.isEmpty()) {
+                    log.warn("No tracks found in playlist folder: {}", playlistFolder);
+                    continue;
+                }
+
+                // Iterate over each track file
+                for (String trackFile : trackFiles) {
+                    // Retrieve the track file from S3
+                    S3Object trackS3Object = s3Client.getObject(new GetObjectRequest(bucketName, trackFile));
+                    InputStream trackInputStream = trackS3Object.getObjectContent();
+
+                    // Extract track name and artist from the file name
+                    String fileNameWithoutExtension = trackFile.substring(trackFile.lastIndexOf('/') + 1,
+                            trackFile.lastIndexOf('.'));
+                    String[] parts = fileNameWithoutExtension.split(" - ", 2);
+
+                    // Create a temporary file to store the track
+                    Path tempFilePath = Files.createTempFile("track-", ".mp3");
+                    try (BufferedInputStream bufferedInputStream = new BufferedInputStream(trackInputStream);
+                            FileOutputStream fileOutputStream = new FileOutputStream(tempFilePath.toFile());
+                            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream)) {
+
+                        // Create a temporary file to store the track
+                        byte[] buffer = new byte[1024];
+                        int bytesRead;
+                        while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+                            bufferedOutputStream.write(buffer, 0, bytesRead);
+                        }
+                    }
+
+                    // Ensure the file name format is correct
+                    if (parts.length < 2) {
+                        log.warn("File name format is incorrect: {}", fileNameWithoutExtension);
+                        continue;
+                    }
+
+                    String artist = parts[0];
+                    String title = parts[1];
+
+                    // Search for an image file with the same name
+                    String imageLocation = null;
+                    List<String> imageFiles = s3Client.listObjectsV2(new ListObjectsV2Request()
+                            .withBucketName(bucketName)
+                            .withPrefix(finalPlaylistFolder))
+                            .getObjectSummaries().stream()
+                            .map(s -> s.getKey())
+                            .filter(key -> key.equals(finalPlaylistFolder + fileNameWithoutExtension + ".jpg") ||
+                                    key.equals(finalPlaylistFolder + fileNameWithoutExtension + ".png"))
+                            .collect(Collectors.toList());
+
+                    if (!imageFiles.isEmpty()) {
+                        imageLocation = imageFiles.get(0); // Get the first matching image
+                        log.info("Found image for track: {} at {}", trackFile, imageLocation);
+                    } else {
+                        log.info("No image found for track: {}", trackFile);
+                    }
+
+                    log.info("Processing track file: {}", trackFile);
+
+                    // Using jaudiotagger to get length
+                    MP3File mp3File = new MP3File(tempFilePath.toFile());
+                    Track track = Track.builder()
+                            .title(title)
+                            .artist(artist)
+                            .location(trackFile)
+                            .playlist(playlist)
+                            .image(imageLocation)
+                            .length((double) mp3File.getAudioHeader().getTrackLength())
+                            .build();
+
+                    trackRepository.save(track);
+                    log.info("Saved track: {} by artist: {} for playlist: {}", track.getTitle(), track.getArtist(),
+                            playlist.getTitle());
+                }
+            } catch (AmazonS3Exception e) {
+                log.error("Error accessing S3 object: {}", e.getMessage());
             }
         }
-
-        log.info("Completed loading playlists from directory: " + musicFolder.getAbsolutePath());
+        log.info("Completed loading playlists from bucket path: {}", musicFolderPath);
     }
-
 }

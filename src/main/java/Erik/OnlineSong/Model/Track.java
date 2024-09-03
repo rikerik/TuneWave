@@ -1,10 +1,12 @@
 package Erik.OnlineSong.Model;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Base64;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
@@ -51,14 +53,15 @@ public class Track {
     @Transient
     private String base64Image;
 
-    public void encodeImageToBase64() {
+    public void encodeImageToBase64(AmazonS3 s3Client) {
         if (image != null && !image.isEmpty()) {
             try {
-                File imageFile = new File(image);
-                FileInputStream fileInputStream = new FileInputStream(imageFile);
-                byte[] imageBytes = fileInputStream.readAllBytes();
+                // Retrieve the image from S3
+                S3Object s3Object = s3Client.getObject(new GetObjectRequest("tunewave", image));
+                InputStream inputStream = s3Object.getObjectContent();
+                byte[] imageBytes = inputStream.readAllBytes();
                 base64Image = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(imageBytes);
-                fileInputStream.close();
+                inputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

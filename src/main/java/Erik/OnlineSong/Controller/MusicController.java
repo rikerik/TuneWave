@@ -1,9 +1,10 @@
 package Erik.OnlineSong.Controller;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.PathResource;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,7 @@ import Erik.OnlineSong.Model.Track;
 import Erik.OnlineSong.Repository.PlaylistRepository;
 import Erik.OnlineSong.Repository.TrackRepository;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,10 +25,12 @@ public class MusicController {
 
     private final PlaylistRepository playlistRepository;
     private final TrackRepository trackRepository;
+    private final AmazonS3 s3Client;
 
-    public MusicController(PlaylistRepository playlistRepository, TrackRepository trackRepository) {
+    public MusicController(PlaylistRepository playlistRepository, TrackRepository trackRepository, AmazonS3 s3Client) {
         this.playlistRepository = playlistRepository;
         this.trackRepository = trackRepository;
+        this.s3Client = s3Client;
     }
 
     @GetMapping("/playlists")
@@ -41,7 +42,7 @@ public class MusicController {
     public ResponseEntity<List<Track>> getAllTracks() {
         List<Track> tracks = trackRepository.findAll();
         for (Track track : tracks) {
-            track.encodeImageToBase64(); // Convert image to Base64 for each track
+            track.encodeImageToBase64(s3Client); // Convert image to Base64 for each track using S3
         }
         return ResponseEntity.ok(tracks);
     }
@@ -50,29 +51,38 @@ public class MusicController {
     public ResponseEntity<List<Track>> getTracksByPlaylistId(@PathVariable Integer playlistId) {
         List<Track> tracks = trackRepository.findByPlaylistId(playlistId);
         for (Track track : tracks) {
-            track.encodeImageToBase64(); // Convert image to Base64
+            track.encodeImageToBase64(s3Client);
         }
         return ResponseEntity.ok(tracks);
     }
 
     @GetMapping("/tracks/{id}")
     public ResponseEntity<Resource> getTrack(@PathVariable Integer id) {
-        // Check if the track exists
-        return trackRepository.findById(id)
-                .map(track -> {
-                    Path path = Paths.get(track.getLocation());
-                    Resource resource = new FileSystemResource(path);
+        // Fetch the track from the repository
+        Optional<Track> optionalTrack = trackRepository.findById(id);
 
-                    MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
-                    if (path.toString().endsWith(".mp3")) {
-                        mediaType = MediaType.valueOf("audio/mpeg");
-                    }
+        if (optionalTrack.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-                    return ResponseEntity.ok()
-                            .contentType(mediaType)
-                            .body(resource);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        Track track = optionalTrack.get();
+
+        try {
+            // Fetch the S3 object
+            S3Object s3Object = s3Client.getObject(new GetObjectRequest("tunewave", track.getLocation()));
+            InputStream inputStream = s3Object.getObjectContent();
+
+            MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            if (track.getLocation().endsWith(".mp3")) {
+                mediaType = MediaType.valueOf("audio/mpeg");
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .body(new InputStreamResource(inputStream));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }

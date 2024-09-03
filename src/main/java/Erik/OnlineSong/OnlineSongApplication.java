@@ -10,11 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class OnlineSongApplication implements CommandLineRunner {
 
 	private PlaylistLoaderService playlistLoaderService;
-	private LyricsService lyricsService;
 
-	public OnlineSongApplication(PlaylistLoaderService playlistLoaderService, LyricsService lyricsService) {
+	public OnlineSongApplication(PlaylistLoaderService playlistLoaderService) {
 		this.playlistLoaderService = playlistLoaderService;
-		this.lyricsService = lyricsService;
 	}
 
 	public static void main(String[] args) {
@@ -23,9 +21,8 @@ public class OnlineSongApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// Music folder
-		String musicFolderPath = "\\src\\main\\resources\\Music";
-		playlistLoaderService.loadPlaylists(musicFolderPath);
+		// playlistLoaderService.loadPlaylists();
+		// Skipping loading file from bucket
 	}
 
 }

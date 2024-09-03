@@ -52,9 +52,8 @@ public class SecurityConfig {
                         req -> req.requestMatchers("/login/**", "/register/**")
                                 .permitAll()
                                 .requestMatchers("/admin_only/**").hasAnyAuthority("ADMIN")
-                                .anyRequest().permitAll() // delete permit all
-                // .authenticated()
-                )
+                                .anyRequest()
+                                .authenticated())
                 .userDetailsService(userDetailsServiceImp)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
