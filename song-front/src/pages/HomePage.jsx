@@ -8,6 +8,7 @@ import { getPlaylists, getTracks } from "../api/musicApi";
 const HomePage = () => {
   const [tracks, setTracks] = useState([]);
   const [playlists, setPlaylists] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPlaylistsAndTracks = async () => {
@@ -21,6 +22,9 @@ const HomePage = () => {
         setTracks(trackResponse.data);
       } catch (error) {
         console.error("Error fetching playlists or tracks:", error);
+      } finally {
+        // Set loading to false
+        setLoading(false);
       }
     };
 
@@ -49,21 +53,35 @@ const HomePage = () => {
                 </div>
               ))}
             </div>
-            <hr class="border-dark"></hr>
+            <hr className="border-dark"></hr>
           </div>
           <div className="mt-5 mb-5">
             <h5 className="mb-3 text-center">Recently Played</h5>
             <div className="row">
-              {tracks.map((track) => (
-                <div className="col-md-2 col-lg-2 mb-5" key={track.id}>
-                  <SongCard
-                    title={track.title}
-                    artist={track.artist}
-                    imageUrl={track.base64Image}
-                    id={track.id}
-                  />
+              {loading ? (
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ height: "200px" }}
+                >
+                  <div
+                    className="spinner-border text-info p-lg-4"
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
                 </div>
-              ))}
+              ) : (
+                tracks.map((track) => (
+                  <div className="col-md-2 col-lg-2 mb-5" key={track.id}>
+                    <SongCard
+                      title={track.title}
+                      artist={track.artist}
+                      imageUrl={track.base64Image}
+                      id={track.id}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
