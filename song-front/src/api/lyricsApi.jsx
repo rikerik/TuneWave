@@ -1,9 +1,9 @@
 import api from "./api";
 
-export const getLyrics = (audioUrl) => {
-  return api.get("/lyrics/get", {
+export const getLyrics = (id) => {
+  return api.get("/lyrics/getLyrics", {
     params: {
-      audioUrl,
+      id: id,
     },
   });
 };

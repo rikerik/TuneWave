@@ -2,11 +2,24 @@ package Erik.OnlineSong.Controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+
+import Erik.OnlineSong.Model.Track;
+import Erik.OnlineSong.Repository.TrackRepository;
 import Erik.OnlineSong.Service.LyricsService;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URL;
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,21 +29,53 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LyricsController {
 
     private final LyricsService lService;
+    private final AmazonS3 s3Client;
+    private final TrackRepository repository;
 
-    public LyricsController(LyricsService lService) {
+    public LyricsController(LyricsService lService, AmazonS3 s3Client, TrackRepository repository) {
         this.lService = lService;
+        this.s3Client = s3Client;
+        this.repository = repository;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<String> getLyrics(@RequestParam String audioUrl) {
+    @GetMapping("/getLyrics")
+    public ResponseEntity<String> getLyrics(@RequestParam String id) {
+        if (id == null || id.isEmpty()) {
+            return ResponseEntity.badRequest().body("Track ID is missing");
+        }
+
         try {
-            return ResponseEntity.ok().body(lService.getLyrics(audioUrl));
+            // Fetch the track from the repository
+            Optional<Track> optionalTrack = repository.findById(Integer.valueOf(id));
+
+            if (optionalTrack.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Track track = optionalTrack.get();
+
+            // Set the expiration time for the presigned URL
+            Date expiration = new Date();
+            long expTimeMillis = expiration.getTime();
+            expTimeMillis += 1000 * 60; // Add 1 minute
+            expiration.setTime(expTimeMillis);
+
+            // Generate presigned URL request
+            GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest("tunewave", track.getLocation())
+                    .withMethod(HttpMethod.GET)
+                    .withExpiration(expiration);
+
+            // Generate the URL
+            URL url = s3Client.generatePresignedUrl(urlRequest);
+
+            // Fetch lyrics using the URL
+            String lyrics = lService.getLyrics(url.toString());
+
+            return ResponseEntity.ok().body(lyrics);
         } catch (Exception e) {
             log.error("Error while fetching lyrics: ", e);
             return ResponseEntity.internalServerError().body("Error while fetching lyrics");
-
         }
-
     }
 
 }

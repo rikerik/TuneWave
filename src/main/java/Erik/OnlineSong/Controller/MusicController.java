@@ -69,7 +69,7 @@ public class MusicController {
 
         try {
             // Fetch the S3 object
-            S3Object s3Object = s3Client.getObject(new GetObjectRequest(track.getBucketName(), track.getLocation()));
+            S3Object s3Object = s3Client.getObject(new GetObjectRequest("tunewave", track.getLocation()));
             InputStream inputStream = s3Object.getObjectContent();
 
             MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;

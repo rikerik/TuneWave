@@ -43,8 +43,6 @@ const MusicController = () => {
       } else {
         audio.pause();
       }
-      //TODO its skipping a track somewhy when clicking on next
-      // Add the ended event listener to play the next track
 
       const handleEnded = () => {
         nextTrack();
@@ -94,9 +92,13 @@ const MusicController = () => {
     setLoading(true);
 
     try {
-      if (audioSrc) {
-        const response = await getLyrics(audioSrc); // Fetch lyrics using audioSrc
-        setLyrics(response.data.lyrics || "Lyrics not available.");
+      if (currentTrack?.id) {
+        const response = await getLyrics(currentTrack.id);
+        if (response.data) {
+          setLyrics(response.data || "Lyrics not available.");
+        } else {
+          setLyrics("Lyrics not available.");
+        }
       }
     } catch (error) {
       console.error("Error fetching lyrics:", error);
@@ -166,11 +168,18 @@ const MusicController = () => {
           </div>
 
           {/* Modal for Lyrics */}
-          <Modal show={showLyrics} onHide={handleCloseLyrics}>
+          <Modal
+            show={showLyrics}
+            onHide={handleCloseLyrics}
+            size="lg"
+            className="custom-modal"
+            centered
+            scrollable
+          >
             <Modal.Header closeButton>
               <Modal.Title>Lyrics</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="modal-lyrics-body">
               {loading ? (
                 <div className="d-flex justify-content-center">
                   <Spinner animation="border" role="status">
@@ -178,7 +187,7 @@ const MusicController = () => {
                   </Spinner>
                 </div>
               ) : (
-                <pre>{lyrics}</pre>
+                <div className="lyrics-content">{lyrics}</div>
               )}
             </Modal.Body>
             <Modal.Footer>
