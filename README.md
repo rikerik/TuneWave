@@ -23,9 +23,7 @@ This application is an online song player that combines a React frontend with a 
 
 1. Clone the repository:
 
-   ```bash
    git clone https://github.com/rikerik/OnlineSong.git
-   ```
 
 2. Navigate to directory
    cd OnlineSong
