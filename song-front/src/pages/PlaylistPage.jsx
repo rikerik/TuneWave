@@ -6,6 +6,7 @@ import Sidebar from "../components/common/SideBar";
 
 const PlaylistPage = ({ playlistId }) => {
   const [tracks, setTracks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!playlistId) {
@@ -19,6 +20,9 @@ const PlaylistPage = ({ playlistId }) => {
         setTracks(response.data);
       } catch (error) {
         console.error("Error fetching tracks for playlist:", error);
+      } finally {
+        // Set loading to false
+        setLoading(false);
       }
     };
 
@@ -38,16 +42,27 @@ const PlaylistPage = ({ playlistId }) => {
           </div>
 
           <div className="row">
-            {tracks.map((track) => (
-              <div className="col-md-2 mb-3" key={track.id}>
-                <SongCard
-                  title={track.title}
-                  artist={track.artist}
-                  imageUrl={track.base64Image}
-                  id={track.id}
-                />
+            {loading ? (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ height: "200px" }}
+              >
+                <div className="spinner-border text-info p-lg-4" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
               </div>
-            ))}
+            ) : (
+              tracks.map((track) => (
+                <div className="col-md-2 col-lg-2 mb-5" key={track.id}>
+                  <SongCard
+                    title={track.title}
+                    artist={track.artist}
+                    imageUrl={track.base64Image}
+                    id={track.id}
+                  />
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

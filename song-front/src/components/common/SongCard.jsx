@@ -19,7 +19,12 @@ const SongCard = ({ title, artist, imageUrl, id }) => {
       onClick={handlePlay}
     >
       {imageUrl ? (
-        <img src={imageUrl} alt={title} className="song-card-image" />
+        <img
+          src={imageUrl}
+          alt={title}
+          className="song-card-image"
+          style={{ width: "100%", height: "auto" }}
+        />
       ) : (
         <div className="song-card-placeholder">No Image</div>
       )}
