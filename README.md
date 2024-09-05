@@ -1,10 +1,10 @@
-# Online Song Player Application
+TuneWave
 
 ## Overview
 
-![Online Song Player](/image.jpg)
+![TuneWave](/image.jpg)
 
-This application is an online song player that combines a React frontend with a Java backend to deliver a seamless music streaming experience. The app features JWT authentication for secure user access and leverages React for playing tracks across different pages. Additionally, it utilizes Amazon S3 for storing and retrieving tracks, ensuring efficient and scalable media storage. Future enhancements include integrating AI to fetch lyrics dynamically and implementing a visualizer made in p5.js for a more immersive user experience.
+TuneWave is an online song player that combines a React frontend with a Java backend to deliver a seamless music streaming experience. The app features JWT authentication for secure user access and leverages React for playing tracks across different pages. Additionally, it utilizes Amazon S3 for storing and retrieving tracks, ensuring efficient and scalable media storage. Future enhancements include integrating AI to fetch lyrics dynamically and implementing a visualizer made in p5.js for a more immersive user experience.
 
 ## Features
 
