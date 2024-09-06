@@ -88,7 +88,6 @@ export const MusicPlayerProvider = ({ children }) => {
     const fetchTracks = async () => {
       try {
         const response = await getTracks();
-        // Assuming tracks are sorted by ID or any other property
         setTrackList(response.data.sort((a, b) => a.id - b.id));
       } catch (error) {
         console.error("Error fetching tracks:", error);

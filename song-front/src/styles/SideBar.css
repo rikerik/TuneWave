@@ -1,0 +1,16 @@
+.nav-link-orange {
+    color: orange !important;
+    font-size: 1.25rem;
+}
+
+.nav-link-orange:hover {
+    color: darkorange !important;
+}
+
+.sidebar-divider {
+    border-top: 1px solid rgb(64, 142, 179);
+    opacity: 0.7;
+    margin-left: 10px;
+    margin-right: 10px;
+
+}
