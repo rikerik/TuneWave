@@ -1,9 +1,15 @@
 import axios from "axios";
 
+/**
+ * Axios instance for making API requests.
+ *
+ * @type {import("axios").AxiosInstance}
+ */
+// Create an instance of axios with custom configuration
 const api = axios.create({
-  baseURL: "http://localhost:8080", //Base url
+  baseURL: "http://localhost:8080", //Base url for all requests
   headers: {
-    "Content-Type": "application/json", //Default content type
+    "Content-Type": "application/json", //Default content type for requests
   },
 });
 
@@ -11,8 +17,10 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("token"); // Get token from local storage
   if (token) {
+    //If a token exists, add it to the Authorization header
     config.headers["Authorization"] = `Bearer ${token}`; // Add token to headers
   }
+  //return the updated config
   return config;
 });
 
