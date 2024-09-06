@@ -19,6 +19,7 @@ export const MusicPlayerProvider = ({ children }) => {
   const [audioSrc, setAudioSrc] = useState(null);
   const [trackList, setTrackList] = useState([]); // Store the track list
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0); // Store the index of the current track
+  const [shuffle, setShuffle] = useState(false);
 
   // Function to play a specific track
   const playTrack = async (track) => {
@@ -55,10 +56,17 @@ export const MusicPlayerProvider = ({ children }) => {
 
   const nextTrack = () => {
     if (trackList.length > 0) {
-      // Calculate the index of the next track
-      const nextIndex = (currentTrackIndex + 1) % trackList.length;
-      setCurrentTrackIndex(nextIndex);
-      playTrack(trackList[nextIndex]);
+      if (shuffle) {
+        // Shuffle Mode: play a random track
+        const randomIndex = Math.floor(Math.random() * trackList.length);
+        setCurrentTrackIndex(randomIndex);
+        playTrack(trackList[randomIndex]);
+      } else {
+        // Normal Mode: play the next track
+        const nextIndex = (currentTrackIndex + 1) % trackList.length;
+        setCurrentTrackIndex(nextIndex);
+        playTrack(trackList[nextIndex]);
+      }
     }
   };
 
@@ -69,6 +77,10 @@ export const MusicPlayerProvider = ({ children }) => {
       setCurrentTrackIndex(prevIndex);
       playTrack(trackList[prevIndex]);
     }
+  };
+
+  const toggleShuffle = () => {
+    setShuffle(!shuffle);
   };
 
   // Effect to fetch the list of tracks on component mount
@@ -97,6 +109,8 @@ export const MusicPlayerProvider = ({ children }) => {
       nextTrack,
       previousTrack,
       audioSrc,
+      shuffle,
+      toggleShuffle,
     }),
     [
       currentTrack,
@@ -106,6 +120,7 @@ export const MusicPlayerProvider = ({ children }) => {
       nextTrack,
       previousTrack,
       audioSrc,
+      shuffle,
     ]
   );
 

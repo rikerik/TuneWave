@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useMusicPlayer } from "../context/MusicPlayerContext";
 import { Modal, Button, Spinner } from "react-bootstrap";
-import { FiMusic } from "react-icons/fi";
+import { FiMusic, FiShuffle } from "react-icons/fi";
 import { getLyrics } from "../../api/lyricsApi";
 
 const MusicController = () => {
@@ -15,6 +15,8 @@ const MusicController = () => {
     audioSrc,
     nextTrack,
     previousTrack,
+    shuffle,
+    toggleShuffle,
   } = useMusicPlayer();
 
   const [volume, setVolume] = useState(0.5);
@@ -135,6 +137,15 @@ const MusicController = () => {
             <button onClick={nextTrack} className="btn btn-light mx-2">
               Next
             </button>
+
+            {/* Shuffle Button */}
+            <FiShuffle
+              className="mx-2"
+              size={24}
+              style={{ cursor: "pointer", color: shuffle ? "green" : "white" }}
+              onClick={toggleShuffle}
+            />
+
             <input
               type="range"
               min="0"

@@ -56,7 +56,7 @@ const HomePage = () => {
             <hr className="border-dark"></hr>
           </div>
           <div className="mt-5 mb-5">
-            <h5 className="mb-3 text-center">Recently Played</h5>
+            <h5 className="mb-3 text-center">All tracks</h5>
             <div className="row">
               {loading ? (
                 <div
