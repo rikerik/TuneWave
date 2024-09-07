@@ -40,6 +40,16 @@ public class JwtService {
     }
 
     /**
+     * Extracts the userId from the JWT token.
+     * 
+     * @param token Jwt token
+     * @return Returns the userId from the token
+     */
+    public Integer extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("UserId", Integer.class));
+    }
+
+    /**
      * Extracts the username and checks if the username is equals with the current
      * user's username and checks the token's expiration date
      * 
@@ -120,6 +130,7 @@ public class JwtService {
     public String generateToken(User user) {
         return Jwts.builder()
                 .subject(user.getUsername())
+                .claim("UserId", user.getId())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
                 .signWith(getSigningKey())
