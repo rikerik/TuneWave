@@ -21,7 +21,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity(name = "track")
-// @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+// Ignores Hibernate-specific properties to prevent serialization issues.
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Track {
 
     @Id
