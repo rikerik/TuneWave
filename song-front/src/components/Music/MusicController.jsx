@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useMusicPlayer } from "../context/MusicPlayerContext";
 import { Modal, Button, Spinner } from "react-bootstrap";
 import { FiMusic, FiShuffle } from "react-icons/fi";
+import { FaPlay, FaPause, FaStepForward, FaStepBackward } from "react-icons/fa";
 import { getLyrics } from "../../api/lyricsApi";
 
 const MusicController = () => {
@@ -123,19 +124,31 @@ const MusicController = () => {
           </div>
           <audio ref={audioRef} />
           <div className="controls d-flex align-items-center">
-            <button onClick={previousTrack} className="btn btn-light mx-2">
-              Prev
+            <button
+              onClick={previousTrack}
+              className="btn btn-light mx-2"
+              style={{ color: "orange" }}
+            >
+              <FaStepBackward size={24} />
             </button>
             <button
               onClick={() => {
                 isPlaying ? pauseTrack() : playTrack(currentTrack);
               }}
               className="btn btn-light mx-2"
+              style={{
+                background: "linear-gradient(90deg, orange 0%, blue 100%)",
+                color: "white",
+              }}
             >
-              {isPlaying ? "Pause" : "Play"}
+              {isPlaying ? <FaPause size={24} /> : <FaPlay size={24} />}
             </button>
-            <button onClick={nextTrack} className="btn btn-light mx-2">
-              Next
+            <button
+              onClick={nextTrack}
+              className="btn btn-light mx-2"
+              style={{ color: "blue" }}
+            >
+              <FaStepForward size={24} />
             </button>
 
             {/* Shuffle Button */}

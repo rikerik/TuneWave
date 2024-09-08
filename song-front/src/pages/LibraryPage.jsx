@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getFavoriteTracksByUserId } from "../api/FavoriteApi";
+import { getFavoriteTracksByUserId, getSavedTracks } from "../api/FavoriteApi";
 import SongCard from "../components/common/SongCard";
 import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/SideBar";
@@ -8,27 +8,18 @@ import { jwtDecode } from "jwt-decode";
 const LibraryPage = () => {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState(null);
+  const [savedTrackIds, setSavedTrackIds] = useState([]);
 
   useEffect(() => {
-    // Extract user ID from JWT token and set it in state
-    const fetchUserId = () => {
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        const decodedToken = jwtDecode(token);
-        return decodedToken.UserId;
-      }
-      return null;
-    };
+    const userId = getUserIdFromToken(); // Get user ID from token
 
-    const userIdFromToken = fetchUserId();
-    setUserId(userIdFromToken);
-
-    if (userIdFromToken) {
+    if (userId) {
       const fetchFavoriteTracks = async () => {
         try {
-          const response = await getFavoriteTracksByUserId(userIdFromToken);
+          const response = await getFavoriteTracksByUserId(userId);
           setTracks(response.data);
+          const savedTracksResponse = await getSavedTracks(userId);
+          setSavedTrackIds(savedTracksResponse.data);
         } catch (error) {
           console.error("Error fetching favorite tracks:", error);
         } finally {
@@ -42,6 +33,15 @@ const LibraryPage = () => {
       setLoading(false);
     }
   }, []); // Dependency array is empty to run the effect only once on mount
+
+  const getUserIdFromToken = () => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const decodedToken = jwtDecode(token); // Use a library like jwt-decode
+      return decodedToken.UserId; // Ensure this matches the field in your token
+    }
+    return null;
+  };
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -70,6 +70,7 @@ const LibraryPage = () => {
                     artist={track.artist}
                     imageUrl={track.base64Image}
                     id={track.id}
+                    isFavorited={savedTrackIds.includes(track.id)}
                   />
                 </div>
               ))

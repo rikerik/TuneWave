@@ -15,4 +15,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Integer> {
     Optional<Favorite> findByUserAndTrack(User user, Track track);
 
     List<Favorite> findByUser(User user);
+
 }

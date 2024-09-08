@@ -64,4 +64,9 @@ public class FavoriteController {
         }
     }
 
+    @GetMapping("/favorites/saved/{userId}")
+    public ResponseEntity<List<Integer>> getSaved(@PathVariable Integer userId) {
+        return ResponseEntity.ok(favoriteService.getSavedTracks(userId));
+    }
+
 }

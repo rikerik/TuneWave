@@ -4,10 +4,13 @@ import Sidebar from "../components/common/SideBar";
 import PlaylistCard from "../components/common/PlaylistCard";
 import SongCard from "../components/common/SongCard";
 import { getPlaylists, getTracks } from "../api/musicApi";
+import { getSavedTracks } from "../api/FavoriteApi";
+import { jwtDecode } from "jwt-decode";
 
 const HomePage = () => {
   const [tracks, setTracks] = useState([]);
   const [playlists, setPlaylists] = useState([]);
+  const [savedTrackIds, setSavedTrackIds] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,16 +23,31 @@ const HomePage = () => {
         // Fetch tracks
         const trackResponse = await getTracks();
         setTracks(trackResponse.data);
+
+        // Fetch saved tracks
+        const userId = getUserIdFromToken(); // Get user ID from token
+        if (userId) {
+          const savedTracksResponse = await getSavedTracks(userId);
+          setSavedTrackIds(savedTracksResponse.data);
+        }
       } catch (error) {
-        console.error("Error fetching playlists or tracks:", error);
+        console.error("Error fetching data:", error);
       } finally {
-        // Set loading to false
         setLoading(false);
       }
     };
 
     fetchPlaylistsAndTracks();
   }, []);
+
+  const getUserIdFromToken = () => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      return decodedToken.UserId;
+    }
+    return null;
+  };
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -78,6 +96,7 @@ const HomePage = () => {
                       artist={track.artist}
                       imageUrl={track.base64Image}
                       id={track.id}
+                      isFavorited={savedTrackIds.includes(track.id)}
                     />
                   </div>
                 ))

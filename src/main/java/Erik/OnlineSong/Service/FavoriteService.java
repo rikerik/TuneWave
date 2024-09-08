@@ -94,4 +94,20 @@ public class FavoriteService {
         }
         return Collections.emptyList();
     }
+
+    public List<Integer> getSavedTracks(Integer userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            List<Favorite> favorites = favoriteRepository.findByUser(user);
+
+            return favorites.stream()
+                    .map(favorite -> {
+                        Track track = favorite.getTrack();
+                        return track.getId();
+                    })
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
 }

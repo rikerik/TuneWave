@@ -20,3 +20,7 @@ export const updateFavoriteStatus = (songId, isFavorited, userId) => {
 export const getFavoriteTracksByUserId = (userId) => {
   return api.get(`/favorite/favorites/${userId}`);
 };
+
+export const getSavedTracks = (userId) => {
+  return api.get(`/favorite/favorites/saved/${userId}`);
+};

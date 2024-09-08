@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useMusicPlayer } from "../context/MusicPlayerContext";
 import "../../styles/SongCard.css";
@@ -14,48 +14,41 @@ import { jwtDecode } from "jwt-decode";
  * @param {string} props.artist - The artist of the song.
  * @param {string} props.imageUrl - The url of the song's image.
  * @param {string} props.id - The id of the song.
+ * @param {boolean} props.isFavorited - Indicates if the song is favorited.
  * @returns {JSX.Element} The rendered SongCard component.
  */
-const SongCard = ({ title, artist, imageUrl, id }) => {
-  // Access playTrack function and currentTrackId from MusicPlayerContext
+const SongCard = ({ title, artist, imageUrl, id, isFavorited }) => {
   const { playTrack, currentTrackId } = useMusicPlayer();
-
-  // Check if the current track ID matches this card's ID to highlight this track
-  const isActive = id === currentTrackId;
-
-  // State to manage if a track is favorited or not
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [isFavoritedState, setIsFavoritedState] = useState(isFavorited);
 
   // Extract user ID from JWT token
   const getUserIdFromToken = () => {
     const token = sessionStorage.getItem("token");
     if (token) {
-      const decodedToken = jwtDecode(token); // Use a library like jwt-decode
-      return decodedToken.UserId; // Ensure this matches the field in your token
+      const decodedToken = jwtDecode(token);
+      return decodedToken.UserId;
     }
     return null;
   };
 
-  // Get user ID
   const userId = getUserIdFromToken();
 
   // Toggle favorite status
-  const toggleFavorite = (e) => {
-    e.stopPropagation(); // Prevent playing a track when clicking on heart icon
+  const toggleFavorite = async (e) => {
+    e.stopPropagation(); // Prevent playing a track when clicking on the heart icon
 
-    // Toggle the UI
-    setIsFavorited((prev) => !prev);
+    // Update the ui
+    setIsFavoritedState((prev) => !prev);
 
     // Call the API to update status
-    updateFavoriteStatus(id, !isFavorited, userId)
-      .then((response) => {
-        console.log("Favorite status updated:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error updating favorite status:", error);
-        // Revert the state if the API request fails
-        setIsFavorited((prev) => !prev);
-      });
+    try {
+      await updateFavoriteStatus(id, !isFavoritedState, userId);
+      console.log("Favorite status updated successfully");
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      // Revert the UI change if the API call fails
+      setIsFavoritedState((prev) => !prev);
+    }
   };
 
   // Function to handle play action when the card is clicked
@@ -65,7 +58,7 @@ const SongCard = ({ title, artist, imageUrl, id }) => {
 
   return (
     <div
-      className={`song-card ${isActive ? "active" : ""}`}
+      className={`song-card ${id === currentTrackId ? "active" : ""}`}
       onClick={handlePlay}
     >
       {imageUrl ? (
@@ -89,22 +82,23 @@ const SongCard = ({ title, artist, imageUrl, id }) => {
         onClick={toggleFavorite}
         style={{ cursor: "pointer" }}
       >
-        {isFavorited ? <AiFillHeart color="red" /> : <AiOutlineHeart />}
+        {isFavoritedState ? <AiFillHeart color="red" /> : <AiOutlineHeart />}
       </div>
 
-      {isActive && (
+      {id === currentTrackId && (
         <div className="song-card-playing-indicator">Now Playing</div>
       )}
     </div>
   );
 };
 
-// Define prop types for the component
+// Prop types for the component
 SongCard.propTypes = {
   title: PropTypes.string.isRequired,
   artist: PropTypes.string.isRequired,
   imageUrl: PropTypes.string,
   id: PropTypes.number.isRequired,
+  isFavorited: PropTypes.bool,
 };
 
 export default SongCard;
