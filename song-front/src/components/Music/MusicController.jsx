@@ -4,7 +4,7 @@ import { Modal, Button, Spinner } from "react-bootstrap";
 import { FiMusic, FiShuffle } from "react-icons/fi";
 import { FaPlay, FaPause, FaStepForward, FaStepBackward } from "react-icons/fa";
 import { getLyrics } from "../../api/lyricsApi";
-
+import Visualizer from "./Visualizer";
 const MusicController = () => {
   const audioRef = useRef(null);
 
@@ -122,13 +122,12 @@ const MusicController = () => {
               {currentTrack.title} - {currentTrack.artist}
             </p>
           </div>
+
+          {/* Visualizer */}
+          <Visualizer audioRef={audioRef} />
           <audio ref={audioRef} />
           <div className="controls d-flex align-items-center">
-            <button
-              onClick={previousTrack}
-              className="btn btn-light mx-2"
-              style={{ color: "orange" }}
-            >
+            <button onClick={previousTrack} className="btn btn-light mx-2">
               <FaStepBackward size={24} />
             </button>
             <button
@@ -136,18 +135,10 @@ const MusicController = () => {
                 isPlaying ? pauseTrack() : playTrack(currentTrack);
               }}
               className="btn btn-light mx-2"
-              style={{
-                background: "linear-gradient(90deg, orange 0%, blue 100%)",
-                color: "white",
-              }}
             >
               {isPlaying ? <FaPause size={24} /> : <FaPlay size={24} />}
             </button>
-            <button
-              onClick={nextTrack}
-              className="btn btn-light mx-2"
-              style={{ color: "blue" }}
-            >
+            <button onClick={nextTrack} className="btn btn-light mx-2">
               <FaStepForward size={24} />
             </button>
 

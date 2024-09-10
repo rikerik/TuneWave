@@ -29,9 +29,6 @@ const NavBar = () => {
         <Nav.Link as={Link} to="/home" className="nav-link-large ms-3">
           Home Page
         </Nav.Link>
-        <Nav.Link as={Link} to="/visualizer" className="nav-link-large ms-3">
-          Visualizer
-        </Nav.Link>
       </Nav>
 
       <Nav className="ms-auto">

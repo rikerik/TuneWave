@@ -13,7 +13,6 @@ import { MusicPlayerProvider } from "./components/context/MusicPlayerContext";
 import MusicController from "./components/Music/MusicController";
 import PlaylistContainer from "./components/Music/PlaylistContainer";
 import LibraryPage from "./pages/LibraryPage";
-import Visualizer from "./components/visualizer/Visualizer";
 
 // Component to conditionally render MusicController
 const ConditionalMusicController = () => {
@@ -36,7 +35,6 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/playlist/:id" element={<PlaylistContainer />} />
           <Route path="/library" element={<LibraryPage />} />
-          <Route path="/visualizer" element={<Visualizer />} />
         </Routes>
         <ConditionalMusicController />
       </Router>
