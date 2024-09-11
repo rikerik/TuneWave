@@ -20,30 +20,29 @@
     font-size: 1.2rem;
 }
 
-/* Search bar container */
+.navbar .mx-auto {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
 .search-container {
-    position: relative;
-    display: inline-block;
-    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 400px;
 }
 
-/* Hide by default */
-.hide {
-    opacity: 0;
-    visibility: hidden;
-    transform: scale(0.9);
-}
-
-/* Show search bar with fade-in effect */
-.show {
-    opacity: 1;
-    visibility: visible;
-    transform: scale(1);
-}
-
-/* Search bar input field */
 .search-bar {
-    border-radius: 20px;
-    transition: width 0.3s ease;
-    width: 180px;
+    background-color: #494949;
+    border-radius: 30px;
+    padding: 8px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    color: #ffffff;
+}
+
+.search-bar:focus {
+    background-color: #555252;
+    outline: none;
+    color: #ffffff;
+    box-shadow: 0 0 10px #00000033;
 }
