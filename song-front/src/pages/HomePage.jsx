@@ -57,10 +57,9 @@ const HomePage = () => {
       return true; // If search is empty, display all tracks
     }
     if (filterOption === "track") {
-      return (
-        track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        track.artist.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      return track.title.toLowerCase().includes(searchQuery.toLowerCase());
+    } else if (filterOption === "artist") {
+      return track.artist.toLowerCase().includes(searchQuery.toLowerCase());
     }
     return false;
   });

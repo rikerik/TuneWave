@@ -8,6 +8,7 @@ import {
   Dropdown,
 } from "react-bootstrap";
 import LogoutButton from "./Logout";
+import { useLocation } from "react-router-dom"; // Import useLocation hook
 import "../../styles/NavBar.css";
 
 const logoSrc = "/logo.png";
@@ -18,6 +19,10 @@ const NavBar = ({
   filterOption,
   onFilterChange,
 }) => {
+  const location = useLocation(); // Get current location
+
+  const isHomePage = location.pathname === "/home"; // Check if on homepage
+
   return (
     <Navbar
       bg="dark"
@@ -31,34 +36,38 @@ const NavBar = ({
         <span className="gradient-text">TuneWave</span>
       </Navbar.Brand>
 
-      {/* Nav links */}
-      <Nav className="mx-auto d-flex justify-content-center align-items-center">
-        <div className="search-container">
-          <Form className="d-flex">
-            {/* Search Bar */}
-            <FormControl
-              type="text"
-              className="me-2 search-bar"
-              placeholder={`Search for ${filterOption}`}
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-            />
-          </Form>
-        </div>
-      </Nav>
+      {/* Conditionally render search bar and dropdown only on the homepage */}
+      {isHomePage && (
+        <>
+          <Nav className="mx-auto d-flex justify-content-center align-items-center">
+            <div className="search-container">
+              <Form className="d-flex">
+                {/* Search Bar */}
+                <FormControl
+                  type="text"
+                  className="me-2 search-bar"
+                  placeholder={`Search for ${filterOption}`}
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                />
+              </Form>
+            </div>
+          </Nav>
 
-      {/* Search Filter Dropdown */}
-      <DropdownButton
-        id="dropdown-basic-button"
-        title={`Search by: ${filterOption}`}
-        variant="secondary"
-        className="me-2"
-        onSelect={onFilterChange} // Handle filter option change
-      >
-        <Dropdown.Item eventKey="track">Track Name</Dropdown.Item>
-        <Dropdown.Item eventKey="artist">Artist Name</Dropdown.Item>
-        <Dropdown.Item eventKey="playlist">Playlist Name</Dropdown.Item>
-      </DropdownButton>
+          {/* Search Filter Dropdown */}
+          <DropdownButton
+            id="dropdown-basic-button"
+            title={`Search by: ${filterOption}`}
+            variant="secondary"
+            className="me-2"
+            onSelect={onFilterChange} // Handle filter option change
+          >
+            <Dropdown.Item eventKey="track">Track Name</Dropdown.Item>
+            <Dropdown.Item eventKey="artist">Artist Name</Dropdown.Item>
+            <Dropdown.Item eventKey="playlist">Playlist Name</Dropdown.Item>
+          </DropdownButton>
+        </>
+      )}
 
       <Nav className="ms-auto">
         <LogoutButton className="btn-logout" />
