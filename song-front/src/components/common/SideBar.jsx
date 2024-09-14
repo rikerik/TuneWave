@@ -16,6 +16,9 @@ const Sidebar = ({ className }) => {
         <Nav.Link as={Link} to="/library" className="nav-link nav-link-orange">
           Library
         </Nav.Link>
+        <Nav.Link as={Link} to="/profile" className="nav-link nav-link-orange">
+          User
+        </Nav.Link>
       </Nav>
     </div>
   );
