@@ -5,11 +5,9 @@ import "../../styles/SideBar.css";
 
 const Sidebar = ({ className }) => {
   return (
-    <div className={className}>
+    <div className={`sticky-top ${className}`}>
       <Nav className="flex-column">
         <hr className="my-3 sidebar-divider" />
-
-        {/* Navigation links */}
         <Nav.Link as={Link} to="/home" className="nav-link nav-link-orange">
           Home Page
         </Nav.Link>

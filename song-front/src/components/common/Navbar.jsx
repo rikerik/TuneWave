@@ -28,7 +28,7 @@ const NavBar = ({
       bg="dark"
       variant="dark"
       expand="lg"
-      className="navbar navbar-custom"
+      className="navbar navbar-custom fixed-top"
     >
       {/* Navbar.Brand with logo and title */}
       <Navbar.Brand className="d-flex align-items-center ms-3">
