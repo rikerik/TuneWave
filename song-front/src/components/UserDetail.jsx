@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getUserById } from "../services/UserService";
 import { useParams } from "react-router-dom";
-import ClipLoader from "react-spinners/ClipLoader"; // Import a spinner component from react-spinners
+import ClipLoader from "react-spinners/ClipLoader";
 
 // Component for displaying details of a specific user
 const UserDetail = () => {

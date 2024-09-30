@@ -3,7 +3,7 @@ import { getFavoriteTracksByUserId, getSavedTracks } from "../api/FavoriteApi";
 import SongCard from "../components/common/SongCard";
 import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/SideBar";
-import { jwtDecode } from "jwt-decode";
+import { getUserIdFromToken } from "../Utils/TokenUtil";
 
 const LibraryPage = () => {
   const [tracks, setTracks] = useState([]);
@@ -33,15 +33,6 @@ const LibraryPage = () => {
       setLoading(false);
     }
   }, []); // Dependency array is empty to run the effect only once on mount
-
-  const getUserIdFromToken = () => {
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      const decodedToken = jwtDecode(token); // Use a library like jwt-decode
-      return decodedToken.UserId; // Ensure this matches the field in your token
-    }
-    return null;
-  };
 
   return (
     <div className="d-flex flex-column min-vh-100">

@@ -4,7 +4,7 @@ import { useMusicPlayer } from "../context/MusicPlayerContext";
 import "../../styles/SongCard.css";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { updateFavoriteStatus } from "../../api/FavoriteApi";
-import { jwtDecode } from "jwt-decode";
+import { getUserIdFromToken } from "../../Utils/TokenUtil";
 
 /**
  * Renders a card component for a song.
@@ -20,16 +20,6 @@ import { jwtDecode } from "jwt-decode";
 const SongCard = ({ title, artist, imageUrl, id, isFavorited }) => {
   const { playTrack, currentTrackId } = useMusicPlayer();
   const [isFavoritedState, setIsFavoritedState] = useState(isFavorited);
-
-  // Extract user ID from JWT token
-  const getUserIdFromToken = () => {
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      return decodedToken.UserId;
-    }
-    return null;
-  };
 
   const userId = getUserIdFromToken();
 

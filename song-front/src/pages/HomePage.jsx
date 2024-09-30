@@ -5,7 +5,7 @@ import PlaylistCard from "../components/common/PlaylistCard";
 import SongCard from "../components/common/SongCard";
 import { getPlaylists, getTracks } from "../api/musicApi";
 import { getSavedTracks } from "../api/FavoriteApi";
-import { jwtDecode } from "jwt-decode";
+import { getUserIdFromToken } from "../Utils/TokenUtil";
 
 const HomePage = () => {
   const [tracks, setTracks] = useState([]);
@@ -41,15 +41,6 @@ const HomePage = () => {
 
     fetchPlaylistsAndTracks();
   }, []);
-
-  const getUserIdFromToken = () => {
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      return decodedToken.UserId;
-    }
-    return null;
-  };
 
   // Filter tracks based on search query and filter option (tracks by title or artist, filtering playlists is a different method)
   const filteredTracks = tracks.filter((track) => {
