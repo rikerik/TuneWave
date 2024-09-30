@@ -13,7 +13,6 @@ const HomePage = () => {
   const [savedTrackIds, setSavedTrackIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterOption, setFilterOption] = useState("track");
 
   useEffect(() => {
     const fetchPlaylistsAndTracks = async () => {
@@ -42,87 +41,76 @@ const HomePage = () => {
     fetchPlaylistsAndTracks();
   }, []);
 
-  // Filter tracks based on search query and filter option (tracks by title or artist, filtering playlists is a different method)
-  const filteredTracks = tracks.filter((track) => {
-    if (searchQuery.trim() === "") {
-      return true; // If search is empty, display all tracks
-    }
-    if (filterOption === "track") {
-      return track.title.toLowerCase().includes(searchQuery.toLowerCase());
-    } else if (filterOption === "artist") {
-      return track.artist.toLowerCase().includes(searchQuery.toLowerCase());
-    }
-    return false;
-  });
-
   // Filter playlists based on search query
   const filteredPlaylists = playlists.filter((playlist) => {
     if (searchQuery.trim() === "") {
       return true; // If search is empty, display all playlists
     }
-    if (filterOption === "playlist") {
-      return playlist.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return playlist.title.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  // Filter tracks based on search query (by track title or artist)
+  const filteredTracks = tracks.filter((track) => {
+    if (searchQuery.trim() === "") {
+      return true; // If search is empty, display all tracks
     }
-    return false;
+    return (
+      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      track.artist.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      {/* Pass searchQuery, onSearchChange, filterOption, and onFilterChange to Navbar */}
-      <Navbar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        filterOption={filterOption}
-        onFilterChange={setFilterOption}
-      />
+      <Navbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
       <div className="row flex-grow-1">
         <Sidebar className="col-md-1 bg-dark text-light p-3" />
 
         <div className="col-md-11">
           {!loading && (
-            <div className="mt-4">
-              <h5 className="mb-3 text-center">Featured Playlists</h5>
-              <div className="row">
-                {filteredPlaylists.length > 0 ? (
-                  filteredPlaylists.map((playlist) => (
-                    <div className="col-md-3 mb-3" key={playlist.id}>
-                      <PlaylistCard
-                        id={playlist.id}
-                        title={playlist.title}
-                        description={playlist.description}
-                        imageUrl={playlist.image}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center">No playlists found</div>
-                )}
+            <>
+              <div className="mt-4">
+                <h5 className="mb-3 text-center">Featured Playlists</h5>
+                <div className="row">
+                  {filteredPlaylists.length > 0 ? (
+                    filteredPlaylists.map((playlist) => (
+                      <div className="col-md-3 mb-3" key={playlist.id}>
+                        <PlaylistCard
+                          id={playlist.id}
+                          title={playlist.title}
+                          description={playlist.description}
+                          imageUrl={playlist.image}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center">No playlists found</div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
 
-          {!loading && (
-            <div className="mt-5 mb-5">
-              <h5 className="mb-3 text-center">All tracks</h5>
-              <div className="row">
-                {filteredTracks.length > 0 ? (
-                  filteredTracks.map((track) => (
-                    <div className="col-md-2 col-lg-2 mb-5" key={track.id}>
-                      <SongCard
-                        title={track.title}
-                        artist={track.artist}
-                        imageUrl={track.base64Image}
-                        id={track.id}
-                        isFavorited={savedTrackIds.includes(track.id)}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center">No tracks found</div>
-                )}
+              <div className="mt-5 mb-5">
+                <h5 className="mb-3 text-center">All Tracks</h5>
+                <div className="row">
+                  {filteredTracks.length > 0 ? (
+                    filteredTracks.map((track) => (
+                      <div className="col-md-2 col-lg-2 mb-5" key={track.id}>
+                        <SongCard
+                          title={track.title}
+                          artist={track.artist}
+                          imageUrl={track.base64Image}
+                          id={track.id}
+                          isFavorited={savedTrackIds.includes(track.id)}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center">No tracks found</div>
+                  )}
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {loading && (
