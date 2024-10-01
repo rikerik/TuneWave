@@ -97,7 +97,7 @@ export const MusicPlayerProvider = ({ children }) => {
     fetchTracks();
   }, []);
 
-  // Memoize the value object to avoid unnecessary re-renders of consumers
+  // Memoize the value object to avoid unnecessary re renders of consumers
   const value = useMemo(
     () => ({
       currentTrack,

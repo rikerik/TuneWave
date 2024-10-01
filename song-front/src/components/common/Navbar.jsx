@@ -1,12 +1,12 @@
 import React from "react";
 import { Navbar, Nav, Form, FormControl } from "react-bootstrap";
 import LogoutButton from "./Logout";
-import { useLocation } from "react-router-dom"; // Import useLocation hook
+import { useLocation } from "react-router-dom";
 import "../../styles/NavBar.css";
 
 const logoSrc = "/logo.png";
 
-const NavBar = ({ searchQuery, onSearchChange, filterOption }) => {
+const NavBar = ({ searchQuery, onSearchChange }) => {
   const location = useLocation(); // Get current location
 
   const isHomePage = location.pathname === "/home"; // Check if on homepage
