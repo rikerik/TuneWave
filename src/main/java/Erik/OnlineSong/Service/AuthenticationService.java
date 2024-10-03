@@ -1,7 +1,14 @@
 package Erik.OnlineSong.Service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import javax.imageio.IIOException;
+
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,7 +41,7 @@ public class AuthenticationService {
         this.tokenRepository = tokenRepository;
     }
 
-    public AuthenticationResponse register(User request) {
+    public AuthenticationResponse register(User request) throws FileNotFoundException, IOException {
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -42,6 +49,8 @@ public class AuthenticationService {
         user.setPassword(pwdEncoder.encode(request.getPassword()));
 
         user.setRole(request.getRole());
+
+        user.setUserImage(loadPlaceHolderImage());
 
         user = repository.save(user);
 
@@ -89,6 +98,13 @@ public class AuthenticationService {
             });
         }
         tokenRepository.saveAll(validTokenListByUser);
+    }
+
+    private byte[] loadPlaceHolderImage() throws IOException {
+        ClassPathResource resource = new ClassPathResource("placeholder.jpg");
+        try (InputStream inputStream = resource.getInputStream()) {
+            return inputStream.readAllBytes();
+        }
     }
 
 }

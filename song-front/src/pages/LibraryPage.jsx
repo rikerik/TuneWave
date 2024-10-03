@@ -35,39 +35,44 @@ const LibraryPage = () => {
   }, []); // Dependency array is empty to run the effect only once on mount
 
   return (
-    <div className="d-flex flex-column min-vh-100">
-      <Navbar />
-      <div className="row flex-grow-1">
-        <Sidebar className="col-md-1 bg-dark text-light p-3" />
-        <div className="col-md-10">
-          <div className="mt-4">
-            <h3>Your Favorite Tracks</h3>
-          </div>
-          <div className="row">
-            {loading ? (
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ height: "200px" }}
-              >
-                <div className="spinner-border text-info p-lg-4" role="status">
-                  <span className="visually-hidden">Loading...</span>
+    <div className="content-below-navbar">
+      <div className="d-flex flex-column min-vh-100">
+        <Navbar />
+        <div className="row flex-grow-1">
+          <Sidebar className="col-md-1 bg-dark text-light p-3" />
+          <div className="col-md-10">
+            <div className="mt-4">
+              <h3>Your Favorite Tracks</h3>
+            </div>
+            <div className="row">
+              {loading ? (
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ height: "200px" }}
+                >
+                  <div
+                    className="spinner-border text-info p-lg-4"
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
                 </div>
-              </div>
-            ) : tracks.length > 0 ? (
-              tracks.map((track) => (
-                <div className="col-md-2 col-lg-2 mb-5" key={track.id}>
-                  <SongCard
-                    title={track.title}
-                    artist={track.artist}
-                    imageUrl={track.base64Image}
-                    id={track.id}
-                    isFavorited={savedTrackIds.includes(track.id)}
-                  />
-                </div>
-              ))
-            ) : (
-              <div>No favorite tracks found.</div>
-            )}
+              ) : tracks.length > 0 ? (
+                tracks.map((track) => (
+                  <div className="col-md-2 col-lg-2 mb-5" key={track.id}>
+                    <SongCard
+                      title={track.title}
+                      artist={track.artist}
+                      imageUrl={track.base64Image}
+                      id={track.id}
+                      isFavorited={savedTrackIds.includes(track.id)}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div>No favorite tracks found.</div>
+              )}
+            </div>
           </div>
         </div>
       </div>

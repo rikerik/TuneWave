@@ -7,6 +7,9 @@ import Erik.OnlineSong.Model.Role;
 import Erik.OnlineSong.Model.User;
 import Erik.OnlineSong.Service.AuthenticationService;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +25,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody User request) {
+            @RequestBody User request) throws FileNotFoundException, IOException {
         request.setRole(Role.USER); // set default role to USER
         return ResponseEntity.ok(service.register(request));
     }

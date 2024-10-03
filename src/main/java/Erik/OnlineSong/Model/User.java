@@ -46,8 +46,7 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Lob
-    @Column(name = "user_image", columnDefinition = "BLOB", nullable = true)
+    @Column(name = "user_image", columnDefinition = "bytea", nullable = true)
     private byte[] userImage;
 
     @Enumerated(value = EnumType.STRING) // Specifying that that role field is an enum, it will be a string in the db
