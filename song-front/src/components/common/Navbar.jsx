@@ -19,7 +19,7 @@ const NavBar = ({ searchQuery, onSearchChange }) => {
       className="navbar navbar-custom fixed-top"
     >
       {/* Navbar.Brand with logo and title */}
-      <Navbar.Brand className="d-flex align-items-center ms-3">
+      <Navbar.Brand className="d-flex align-items-center ms-1">
         <img src={logoSrc} alt="Logo" className="circular-logo" />
         <span className="gradient-text">TuneWave</span>
       </Navbar.Brand>

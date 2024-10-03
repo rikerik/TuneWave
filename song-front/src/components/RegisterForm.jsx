@@ -34,7 +34,7 @@ const RegisterForm = () => {
 
   return (
     <div className="form-container">
-      <div className="card">
+      <div className="card shadow p-4">
         <h2 className="mb-4 text-center">Register</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
