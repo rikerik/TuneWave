@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { register } from "../services/AuthService";
 import "../styles/Form.css";
 
@@ -9,8 +9,6 @@ const RegisterForm = () => {
   const [password, setPassword] = useState("");
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
-
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +23,7 @@ const RegisterForm = () => {
       if (response.status === 200) {
         const { token } = response.data;
         sessionStorage.setItem("token", token);
-        navigate("/home");
+        window.location.href = "/home";
       } else {
         console.error("Registration failed", response.status);
       }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { login } from "../services/AuthService";
 import "../styles/Form.css";
 
@@ -8,8 +8,6 @@ const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,7 +18,7 @@ const LoginForm = () => {
       if (response.status === 200) {
         const { token } = response.data;
         sessionStorage.setItem("token", token);
-        navigate("/home");
+        window.location.href = "/home";
       } else {
         setError("Invalid username or password");
       }
