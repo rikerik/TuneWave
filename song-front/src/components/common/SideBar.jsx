@@ -17,7 +17,7 @@ const Sidebar = ({ className }) => {
           Library
         </Nav.Link>
         <Nav.Link as={Link} to="/profile" className="nav-link nav-link-orange">
-          User
+          Profile
         </Nav.Link>
       </Nav>
     </div>

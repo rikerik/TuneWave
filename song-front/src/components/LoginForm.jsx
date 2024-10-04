@@ -29,8 +29,8 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="form-container">
-      <div className="card ">
+    <div className="form-container ">
+      <div className="card shadow p-4 mt-5 ">
         <h2 className="mb-4 text-center">Login</h2>
         <form onSubmit={handleSubmit}>
           {error && (
