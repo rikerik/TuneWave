@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/SideBar";
+import { updateUserProfile } from "../services/ProfileService";
+import { getUserIdFromToken } from "../Utils/TokenUtil";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ProfilePage = () => {
@@ -8,9 +10,10 @@ const ProfilePage = () => {
     firstName: "",
     lastName: "",
     password: "",
-    profilePicture: null, //field for the profile picture
+    profilePicture: null,
   });
 
+  // Input change for text fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({
@@ -19,6 +22,7 @@ const ProfilePage = () => {
     }));
   };
 
+  // Handle file change
   const handleFileChange = (e) => {
     setProfileData((prevData) => ({
       ...prevData,
@@ -26,17 +30,27 @@ const ProfilePage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // Handling form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("firstName", profileData.firstName);
-    formData.append("lastName", profileData.lastName);
-    formData.append("password", profileData.password);
-
-    // Append the profile picture
-    if (profileData.profilePicture) {
+    // Append only the fields that the user has updated
+    if (profileData.firstName)
+      formData.append("firstName", profileData.firstName);
+    if (profileData.lastName) formData.append("lastName", profileData.lastName);
+    if (profileData.password) formData.append("password", profileData.password);
+    if (profileData.profilePicture)
       formData.append("profilePicture", profileData.profilePicture);
+
+    const userId = getUserIdFromToken();
+    try {
+      //Api call to update profile
+      await updateUserProfile(userId, formData);
+      alert("Profile updated successfully");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating your profile");
     }
   };
 
@@ -48,7 +62,6 @@ const ProfilePage = () => {
           <div className="col-md-1 bg-dark text-light p-3 min-vh-100">
             <Sidebar />
           </div>
-
           <div className="col-md-11 mt-5">
             <div className="row justify-content-center">
               <div className="col-md-6">

@@ -27,11 +27,9 @@ const HomePage = () => {
 
         // Fetch saved tracks
         const userId = getUserIdFromToken(); // Get user ID from token
-        console.log("userId outside if: " + userId);
 
         if (userId) {
           const savedTracksResponse = await getSavedTracks(userId);
-          console.log("userId inside if: " + userId);
           setSavedTrackIds(savedTracksResponse.data);
         } else {
           console.warn(
@@ -41,7 +39,7 @@ const HomePage = () => {
       } catch (error) {
         console.error("Error fetching saved tracks:", error);
       } finally {
-        setLoading(false); // This will always execute regardless of try/catch outcome
+        setLoading(false);
       }
     };
 
