@@ -25,11 +25,12 @@ public class ProfileController {
     @PutMapping("/update/{userId}")
     public ResponseEntity<?> updateProfile(@PathVariable Integer userId,
             @RequestParam(value = "firstName", required = false) String firstName,
+            @RequestParam(value = "userName", required = false) String userName,
             @RequestParam(value = "lastName", required = false) String lastName,
             @RequestParam(value = "password", required = false) String password,
             @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture) {
         try {
-            profileService.updateProfile(userId, firstName, lastName, password, profilePicture);
+            profileService.updateProfile(userId, firstName, userName, lastName, password, profilePicture);
             return ResponseEntity.ok("Profile updated successfully");
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to update profile");

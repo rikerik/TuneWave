@@ -10,6 +10,7 @@ const ProfilePage = () => {
     firstName: "",
     lastName: "",
     password: "",
+    userName: "",
     profilePicture: null,
   });
 
@@ -40,6 +41,7 @@ const ProfilePage = () => {
       formData.append("firstName", profileData.firstName);
     if (profileData.lastName) formData.append("lastName", profileData.lastName);
     if (profileData.password) formData.append("password", profileData.password);
+    if (profileData.userName) formData.append("userName", profileData.userName);
     if (profileData.profilePicture)
       formData.append("profilePicture", profileData.profilePicture);
 
@@ -71,6 +73,17 @@ const ProfilePage = () => {
                   </div>
                   <div className="card-body">
                     <form onSubmit={handleSubmit}>
+                      <div className="mb-3">
+                        <label className="form-label">Username</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="userName"
+                          value={profileData.userName}
+                          onChange={handleInputChange}
+                          placeholder="Enter your username"
+                        />
+                      </div>
                       <div className="mb-3">
                         <label className="form-label">First Name</label>
                         <input

@@ -22,7 +22,7 @@ public class UserProfileService {
 
     // Method for updating user profile details
 
-    public void updateProfile(Integer userId, String firstName, String lastName, String password,
+    public void updateProfile(Integer userId, String firstName, String userName, String lastName, String password,
             MultipartFile profilePicture) throws IOException {
 
         // Fetch the user by id
@@ -36,6 +36,10 @@ public class UserProfileService {
 
         if (lastName != null && !lastName.isEmpty()) {
             user.setLastName(lastName);
+        }
+
+        if (userName != null && !userName.isEmpty()) {
+            user.setUsername(userName);
         }
 
         if (password != null && !password.isEmpty()) {
