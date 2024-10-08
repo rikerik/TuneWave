@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { getFavoriteTracksByUserId, getSavedTracks } from "../api/FavoriteApi";
 import SongCard from "../components/common/SongCard";
 import Navbar from "../components/common/Navbar";
-import Sidebar from "../components/common/SideBar";
 import { getUserIdFromToken } from "../Utils/TokenUtil";
 
 const LibraryPage = () => {
@@ -38,9 +37,8 @@ const LibraryPage = () => {
     <div className="content-below-navbar">
       <div className="d-flex flex-column min-vh-100">
         <Navbar />
-        <div className="row flex-grow-1">
-          <Sidebar className="col-md-1 bg-dark text-light p-3" />
-          <div className="col-md-10">
+        <div className="row flex-grow-1 m-1">
+          <div className="col-md-12">
             <div className="mt-4">
               <h3>Your Favorite Tracks</h3>
             </div>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/common/Navbar";
-import Sidebar from "../components/common/SideBar";
 import PlaylistCard from "../components/common/PlaylistCard";
 import SongCard from "../components/common/SongCard";
 import { getPlaylists, getTracks } from "../api/musicApi";
@@ -70,10 +69,8 @@ const HomePage = () => {
       <div className="d-flex flex-column min-vh-100">
         <Navbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-        <div className="row flex-grow-1">
-          <Sidebar className="col-md-1 bg-dark text-light p-3" />
-
-          <div className="col-md-11">
+        <div className="row flex-grow-1 m-1">
+          <div className="col-md-12">
             {!loading && (
               <>
                 <div className="mt-4">

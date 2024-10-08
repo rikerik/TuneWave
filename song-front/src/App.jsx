@@ -27,8 +27,8 @@ const ConditionalMusicController = () => {
 
 function App() {
   return (
-    <MusicPlayerProvider>
-      <Router>
+    <Router>
+      <MusicPlayerProvider>
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -39,8 +39,8 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>
         <ConditionalMusicController />
-      </Router>
-    </MusicPlayerProvider>
+      </MusicPlayerProvider>
+    </Router>
   );
 }
 

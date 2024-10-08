@@ -1,5 +1,0 @@
-Interaktív zenei események:
-
-    Integrálj élő zenei eseményeket, ahol a felhasználók valós időben részt vehetnek koncerteken, vagy virtuális zenei fesztiválokon.
-
-    egy rádiószoba ahol szól egy adott zene és folyamatosan jön egy következő random és ebben a szobában az emberek tudnak egymással chatelni

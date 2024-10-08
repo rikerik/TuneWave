@@ -1,15 +1,16 @@
 import React from "react";
 import { Navbar, Nav, Form, FormControl } from "react-bootstrap";
 import LogoutButton from "./Logout";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom"; // Updated import
+import { FaHome, FaBook, FaUser } from "react-icons/fa";
 import "../../styles/NavBar.css";
 
 const logoSrc = "/logo.png";
 
-const NavBar = ({ searchQuery, onSearchChange }) => {
-  const location = useLocation(); // Get current location
+const NavBar = ({ searchQuery, onSearchChange, onSearchSubmit }) => {
+  const location = useLocation();
 
-  const isHomePage = location.pathname === "/home"; // Check if on homepage
+  const isHomePage = location.pathname === "/home"; // Check if on the homepage
 
   return (
     <Navbar
@@ -18,29 +19,52 @@ const NavBar = ({ searchQuery, onSearchChange }) => {
       expand="lg"
       className="navbar navbar-custom fixed-top"
     >
-      {/* Navbar.Brand with logo and title */}
       <Navbar.Brand className="d-flex align-items-center ms-1">
         <img src={logoSrc} alt="Logo" className="circular-logo" />
         <span className="gradient-text">TuneWave</span>
       </Navbar.Brand>
 
-      {/* Conditionally render search bar and dropdown only on the homepage */}
-      {isHomePage && (
-        <Nav className="mx-auto d-flex justify-content-center align-items-center">
-          <div className="search-container mx-4">
-            <Form className="d-flex">
-              {/* Search Bar */}
-              <FormControl
-                type="text"
-                className="me-2 search-bar"
-                placeholder={`Ready to set the mood?`}
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-              />
-            </Form>
-          </div>
-        </Nav>
-      )}
+      <Nav className="ms-auto">
+        <Nav.Link
+          as={Link}
+          to="/home"
+          className="nav-link nav-link-orange nav-link-large"
+        >
+          <FaHome className="react-icons" title="Home" />
+        </Nav.Link>
+        <Nav.Link
+          as={Link}
+          to="/library"
+          className="nav-link nav-link-orange nav-link-large"
+        >
+          <FaBook className="react-icons" title="Library" />
+        </Nav.Link>
+        <Nav.Link
+          as={Link}
+          to="/profile"
+          className="nav-link nav-link-orange nav-link-large"
+        >
+          <FaUser className="react-icons" title="Profile" />
+        </Nav.Link>
+      </Nav>
+
+      <Nav className="mx-auto d-flex justify-content-center align-items-center">
+        <div className="search-container mx-4">
+          {/* Search Form */}
+          <Form className="d-flex" onSubmit={onSearchSubmit}>
+            <FormControl
+              type="text"
+              className={`me-2 search-bar ${!isHomePage ? "disabled" : ""}`}
+              placeholder="Ready to set the mood?"
+              value={searchQuery}
+              onChange={
+                isHomePage ? (e) => onSearchChange(e.target.value) : undefined
+              } // Disable input on non-homepage
+            />
+            {!isHomePage && <div className="cordon-effect" />}{" "}
+          </Form>
+        </div>
+      </Nav>
 
       <Nav className="ms-auto">
         <LogoutButton className="btn-logout" />
