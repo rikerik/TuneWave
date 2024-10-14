@@ -114,7 +114,7 @@ const MusicController = () => {
   const handleCloseLyrics = () => setShowLyrics(false);
 
   return (
-    <div className="music-controller bg-dark text-light d-flex justify-content-between align-items-center p-3 fixed-bottom">
+    <div className="music-controller bg-dark text-light d-flex justify-content-between align-items-center p-1 fixed-bottom">
       {currentTrack && (
         <>
           <div className="track-info">
