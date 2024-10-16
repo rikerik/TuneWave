@@ -36,7 +36,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         /*
          * Disabling CSRF protection because the app uses jwt which is not susceptible
          * to CSRF attacks
@@ -49,7 +48,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/login/**", "/register/**")
+                        req -> req.requestMatchers("/login/**", "/register/**", "/ws/**") // Allow access to WebSocket
                                 .permitAll()
                                 .requestMatchers("/admin_only/**").hasAnyAuthority("ADMIN")
                                 .anyRequest()
@@ -73,7 +72,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
-
     }
 
     @Bean
@@ -88,7 +86,5 @@ public class SecurityConfig {
                         .allowCredentials(true);
             }
         };
-
     }
-
 }

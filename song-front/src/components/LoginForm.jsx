@@ -18,7 +18,7 @@ const LoginForm = () => {
       if (response.status === 200) {
         const { token } = response.data;
         sessionStorage.setItem("token", token);
-        window.location.href = "/home";
+        window.location.href = "/library";
       } else {
         setError("Invalid username or password");
       }

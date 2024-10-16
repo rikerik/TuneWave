@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getFavoriteTracksByUserId, getSavedTracks } from "../api/FavoriteApi";
 import SongCard from "../components/common/SongCard";
 import Navbar from "../components/common/Navbar";
-import { getUserIdFromToken } from "../Utils/TokenUtil";
+import { getUserDetailsFromToken } from "../Utils/TokenUtil";
 
 const LibraryPage = () => {
   const [tracks, setTracks] = useState([]);
@@ -10,7 +10,7 @@ const LibraryPage = () => {
   const [savedTrackIds, setSavedTrackIds] = useState([]);
 
   useEffect(() => {
-    const userId = getUserIdFromToken(); // Get user ID from token
+    const userId = getUserDetailsFromToken().userId; // Get user ID from token
 
     if (userId) {
       const fetchFavoriteTracks = async () => {

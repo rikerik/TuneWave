@@ -4,7 +4,7 @@ import PlaylistCard from "../components/common/PlaylistCard";
 import SongCard from "../components/common/SongCard";
 import { getPlaylists, getTracks } from "../api/musicApi";
 import { getSavedTracks } from "../api/FavoriteApi";
-import { getUserIdFromToken } from "../Utils/TokenUtil";
+import { getUserDetailsFromToken } from "../Utils/TokenUtil";
 
 const HomePage = () => {
   const [tracks, setTracks] = useState([]);
@@ -25,7 +25,7 @@ const HomePage = () => {
         setTracks(trackResponse.data);
 
         // Fetch saved tracks
-        const userId = getUserIdFromToken(); // Get user ID from token
+        const userId = getUserDetailsFromToken().userId; // Get user ID from token
 
         if (userId) {
           const savedTracksResponse = await getSavedTracks(userId);

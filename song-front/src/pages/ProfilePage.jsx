@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../components/common/Navbar";
 import { updateUserProfile } from "../services/ProfileService";
-import { getUserIdFromToken } from "../Utils/TokenUtil";
+import { getUserDetailsFromToken } from "../Utils/TokenUtil";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ProfilePage = () => {
@@ -44,7 +44,7 @@ const ProfilePage = () => {
     if (profileData.profilePicture)
       formData.append("profilePicture", profileData.profilePicture);
 
-    const userId = getUserIdFromToken();
+    const userId = getUserDetailsFromToken().userId;
     try {
       //Api call to update profile
       await updateUserProfile(userId, formData);

@@ -4,7 +4,7 @@ import { useMusicPlayer } from "../context/MusicPlayerContext";
 import "../../styles/SongCard.css";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { updateFavoriteStatus } from "../../api/FavoriteApi";
-import { getUserIdFromToken } from "../../Utils/TokenUtil";
+import { getUserDetailsFromToken } from "../../Utils/TokenUtil";
 
 /**
  * Renders a card component for a song.
@@ -21,7 +21,7 @@ const SongCard = ({ title, artist, imageUrl, id, isFavorited }) => {
   const { playTrack, currentTrackId } = useMusicPlayer();
   const [isFavoritedState, setIsFavoritedState] = useState(isFavorited);
 
-  const userId = getUserIdFromToken();
+  const userId = getUserDetailsFromToken().userId;
 
   // Toggle favorite status
   const toggleFavorite = async (e) => {

@@ -54,3 +54,35 @@
     background-color: #555;
     color: white;
 }
+
+/* Message styling */
+.chat-message {
+    max-width: 80%;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    word-wrap: break-word;
+}
+
+.message-right {
+    background-color: #4caf50;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.message-left {
+    background-color: #555;
+    color: white;
+    margin-right: auto;
+    text-align: left;
+}
+
+.message-sender {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.message-content {
+    margin: 0;
+}
