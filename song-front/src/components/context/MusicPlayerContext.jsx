@@ -24,9 +24,19 @@ export const MusicPlayerProvider = ({ children }) => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0); // Store the index of the current track
   const [shuffle, setShuffle] = useState(false);
   const [listeningStartTime, setListeningStartTime] = useState(null);
+  const [userId, setUserId] = useState(null); // State to hold user ID
 
-  // Extract the user ID from the token
-  const { userId: tokenUserId } = getUserDetailsFromToken();
+  useEffect(() => {
+    const token = sessionStorage.getItem("token"); // Get the token from sessionStorage
+
+    if (token) {
+      // Only try to retrieve user details if a token exists
+      const userDetails = getUserDetailsFromToken(token);
+      if (userDetails) {
+        setUserId(userDetails.userId);
+      }
+    }
+  }, []); // Run this effect only once, after component mounts
 
   // Function to play a specific track
   const playTrack = async (track) => {
@@ -43,15 +53,12 @@ export const MusicPlayerProvider = ({ children }) => {
         : 0;
 
       const listeningData = {
-        userId: tokenUserId,
+        userId: userId,
         artist: currentTrack.artist,
         duration: listeningDuration,
       };
 
-      console.log(
-        `User ID: ${tokenUserId}, Sending listening data:`,
-        listeningData
-      ); // Log the data being sent
+      console.log(`User ID: ${userId}, Sending listening data:`, listeningData); // Log the data being sent
       await sendListeningData(listeningData);
     }
 
@@ -92,13 +99,13 @@ export const MusicPlayerProvider = ({ children }) => {
           : 0;
 
         const listeningData = {
-          userId: tokenUserId,
+          userId: userId,
           artist: currentTrack.artist,
           duration: listeningDuration,
         };
 
         console.log(
-          `User ID: ${tokenUserId}, Sending listening data:`,
+          `User ID: ${userId}, Sending listening data:`,
           listeningData
         ); // Log the data being sent
         await sendListeningData(listeningData);
@@ -119,13 +126,13 @@ export const MusicPlayerProvider = ({ children }) => {
           : 0;
 
         const listeningData = {
-          userId: tokenUserId,
+          userId: userId,
           artist: currentTrack.artist,
           duration: listeningDuration,
         };
 
         console.log(
-          `User ID: ${tokenUserId}, Sending listening data:`,
+          `User ID: ${userId}, Sending listening data:`,
           listeningData
         ); // Log the data being sent
         await sendListeningData(listeningData);
