@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/common/Navbar";
 import { updateUserProfile } from "../services/ProfileService";
 import { getUserDetailsFromToken } from "../Utils/TokenUtil";
+import {
+  getWeeklyListeningTime,
+  getFavoriteArtists,
+} from "../api/ListeningData";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ProfilePage = () => {
@@ -12,6 +16,30 @@ const ProfilePage = () => {
     userName: "",
     profilePicture: null,
   });
+
+  const [weeklyListeningTime, setWeeklyListeningTime] = useState(0);
+  const [favoriteArtists, setFavoriteArtists] = useState([]); // For storing favorite artists
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userId = getUserDetailsFromToken().userId;
+        console.log(`Fetching data for user ID: ${userId}`);
+
+        // Fetch weekly listening time
+        const time = await getWeeklyListeningTime(userId);
+        setWeeklyListeningTime(time);
+
+        // Fetch favorite artists
+        const artists = await getFavoriteArtists(userId);
+        setFavoriteArtists(artists.slice(0, 3)); // Limit to top 3 artists
+      } catch (error) {
+        console.error("Failed to fetch profile data", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Input change for text fields
   const handleInputChange = (e) => {
@@ -26,16 +54,14 @@ const ProfilePage = () => {
   const handleFileChange = (e) => {
     setProfileData((prevData) => ({
       ...prevData,
-      profilePicture: e.target.files[0], // Capture the selected file
+      profilePicture: e.target.files[0],
     }));
   };
 
   // Handling form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formData = new FormData();
-    // Append only the fields that the user has updated
     if (profileData.firstName)
       formData.append("firstName", profileData.firstName);
     if (profileData.lastName) formData.append("lastName", profileData.lastName);
@@ -46,7 +72,6 @@ const ProfilePage = () => {
 
     const userId = getUserDetailsFromToken().userId;
     try {
-      //Api call to update profile
       await updateUserProfile(userId, formData);
       alert("Profile updated successfully");
     } catch (error) {
@@ -66,6 +91,18 @@ const ProfilePage = () => {
                 <div className="card">
                   <div className="card-header text-center">
                     <h2>Edit Profile</h2>
+                    {/* Display the listening time */}
+                    <p>Weekly Listening Time: {weeklyListeningTime} minutes</p>
+                    {/* Display favorite artists */}
+                    <h3>Your Favorite Artists</h3>
+                    <ul>
+                      {favoriteArtists.map((artistData, index) => (
+                        <li key={index}>
+                          {artistData[0]} - {Math.floor(artistData[1] / 60)}{" "}
+                          minutes listened
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                   <div className="card-body">
                     <form onSubmit={handleSubmit}>

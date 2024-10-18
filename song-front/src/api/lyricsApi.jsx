@@ -7,10 +7,9 @@ import api from "./api";
  * @returns {Promise} - A promise that resolves to the retrieved lyrics.
  */
 export const getLyrics = (id) => {
-  //Get request to the endpoint with the id as a query parameter
   return api.get("/lyrics/getLyrics", {
     params: {
-      id: id, // Passing the id
+      id: id,
     },
   });
 };

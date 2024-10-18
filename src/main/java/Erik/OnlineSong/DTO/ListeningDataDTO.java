@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMessage {
-
-    private String group;
-    private String sender;
-    private String content;
-
+public class ListeningDataDTO {
+    private Integer userId;
+    private String artist;
+    private Integer duration;
 }

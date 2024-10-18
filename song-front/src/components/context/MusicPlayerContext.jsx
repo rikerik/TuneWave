@@ -6,12 +6,15 @@ import React, {
   useMemo,
 } from "react";
 import { getTrackById, getTracks } from "../../api/musicApi";
+import { getUserDetailsFromToken } from "../../Utils/TokenUtil";
+import { sendListeningData } from "../../api/ListeningData";
 
 // Create a Context for the Music Player
 const MusicPlayerContext = createContext();
 
 // Custom hook to use the MusicPlayerContext
 export const useMusicPlayer = () => useContext(MusicPlayerContext);
+
 // Provider component to wrap around parts of the app that need access to music player context
 export const MusicPlayerProvider = ({ children }) => {
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -20,6 +23,10 @@ export const MusicPlayerProvider = ({ children }) => {
   const [trackList, setTrackList] = useState([]); // Store the track list
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0); // Store the index of the current track
   const [shuffle, setShuffle] = useState(false);
+  const [listeningStartTime, setListeningStartTime] = useState(null);
+
+  // Extract the user ID from the token
+  const { userId: tokenUserId } = getUserDetailsFromToken();
 
   // Function to play a specific track
   const playTrack = async (track) => {
@@ -28,6 +35,28 @@ export const MusicPlayerProvider = ({ children }) => {
       setIsPlaying(true);
       return;
     }
+
+    // Send listening data if a track was previously playing
+    if (currentTrack) {
+      const listeningDuration = listeningStartTime
+        ? Math.floor(Date.now() / 1000) - listeningStartTime
+        : 0;
+
+      const listeningData = {
+        userId: tokenUserId,
+        artist: currentTrack.artist,
+        duration: listeningDuration,
+      };
+
+      console.log(
+        `User ID: ${tokenUserId}, Sending listening data:`,
+        listeningData
+      ); // Log the data being sent
+      await sendListeningData(listeningData);
+    }
+
+    // Start playing the new track
+    setListeningStartTime(Math.floor(Date.now() / 1000)); // Set the start time to now
 
     try {
       // Stop any currently playing track
@@ -54,24 +83,54 @@ export const MusicPlayerProvider = ({ children }) => {
     setIsPlaying(false);
   };
 
-  const nextTrack = () => {
+  const nextTrack = async () => {
     if (trackList.length > 0) {
-      if (shuffle) {
-        // Shuffle Mode: play a random track
-        const randomIndex = Math.floor(Math.random() * trackList.length);
-        setCurrentTrackIndex(randomIndex);
-        playTrack(trackList[randomIndex]);
-      } else {
-        // Normal Mode: play the next track
-        const nextIndex = (currentTrackIndex + 1) % trackList.length;
-        setCurrentTrackIndex(nextIndex);
-        playTrack(trackList[nextIndex]);
+      // Call sendListeningData for the current track before switching
+      if (currentTrack) {
+        const listeningDuration = listeningStartTime
+          ? Math.floor(Date.now() / 1000) - listeningStartTime
+          : 0;
+
+        const listeningData = {
+          userId: tokenUserId,
+          artist: currentTrack.artist,
+          duration: listeningDuration,
+        };
+
+        console.log(
+          `User ID: ${tokenUserId}, Sending listening data:`,
+          listeningData
+        ); // Log the data being sent
+        await sendListeningData(listeningData);
       }
+
+      const nextIndex = (currentTrackIndex + 1) % trackList.length;
+      setCurrentTrackIndex(nextIndex);
+      playTrack(trackList[nextIndex]);
     }
   };
 
-  const previousTrack = () => {
+  const previousTrack = async () => {
     if (trackList.length > 0) {
+      // Call sendListeningData for the current track before switching
+      if (currentTrack) {
+        const listeningDuration = listeningStartTime
+          ? Math.floor(Date.now() / 1000) - listeningStartTime
+          : 0;
+
+        const listeningData = {
+          userId: tokenUserId,
+          artist: currentTrack.artist,
+          duration: listeningDuration,
+        };
+
+        console.log(
+          `User ID: ${tokenUserId}, Sending listening data:`,
+          listeningData
+        ); // Log the data being sent
+        await sendListeningData(listeningData);
+      }
+
       const prevIndex =
         (currentTrackIndex - 1 + trackList.length) % trackList.length;
       setCurrentTrackIndex(prevIndex);
@@ -97,7 +156,7 @@ export const MusicPlayerProvider = ({ children }) => {
     fetchTracks();
   }, []);
 
-  // Memoize the value object to avoid unnecessary re renders of consumers
+  // Memoize the value object to avoid unnecessary re-renders of consumers
   const value = useMemo(
     () => ({
       currentTrack,
