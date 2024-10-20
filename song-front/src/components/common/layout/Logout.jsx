@@ -1,7 +1,18 @@
 import React from "react";
-import api from "../../api/api";
+import api from "../../../api/api";
 import { useNavigate } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
+
+/**
+ * LogoutButton component renders a button that handles user logout.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.className - Additional class names for the button.
+ *
+ * @returns {JSX.Element} The rendered logout button component.
+ *
+ * @component
+ */
 
 const LogoutButton = ({ className }) => {
   // Hook to navigate

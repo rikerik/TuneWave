@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/common/Navbar";
-import PlaylistCard from "../components/common/PlaylistCard";
-import SongCard from "../components/common/SongCard";
+import Navbar from "../components/common/layout/Navbar";
+import PlaylistCard from "../components/common/layout/PlaylistCard";
+import SongCard from "../components/common/layout/SongCard";
 import { getPlaylists, getTracks } from "../api/musicApi";
 import { getSavedTracks } from "../api/FavoriteApi";
 import { getUserDetailsFromToken } from "../Utils/TokenUtil";

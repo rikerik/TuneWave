@@ -9,7 +9,7 @@ import { getTrackById, getTracks } from "../../api/musicApi";
 import { getUserDetailsFromToken } from "../../Utils/TokenUtil";
 import { sendListeningData } from "../../api/ListeningData";
 
-// Create a Context for the Music Player
+// Create a Context for the Music Player, allowing components to access music player state
 const MusicPlayerContext = createContext();
 
 // Custom hook to use the MusicPlayerContext
@@ -17,15 +17,16 @@ export const useMusicPlayer = () => useContext(MusicPlayerContext);
 
 // Provider component to wrap around parts of the app that need access to music player context
 export const MusicPlayerProvider = ({ children }) => {
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [audioSrc, setAudioSrc] = useState(null);
-  const [trackList, setTrackList] = useState([]); // Store the track list
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0); // Store the index of the current track
-  const [shuffle, setShuffle] = useState(false);
-  const [listeningStartTime, setListeningStartTime] = useState(null);
-  const [userId, setUserId] = useState(null); // State to hold user ID
+  const [currentTrack, setCurrentTrack] = useState(null); // Currently playing track
+  const [isPlaying, setIsPlaying] = useState(false); // Whether the track is playing
+  const [audioSrc, setAudioSrc] = useState(null); // URL for the audio source
+  const [trackList, setTrackList] = useState([]); // List of tracks fetched from the server
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0); // Index of the current track
+  const [shuffle, setShuffle] = useState(false); // Whether shuffle mode is on
+  const [listeningStartTime, setListeningStartTime] = useState(null); // When the current track started playing
+  const [userId, setUserId] = useState(null); // Store the user's ID
 
+  // Fetch user details from the token when the component mounts
   useEffect(() => {
     const token = sessionStorage.getItem("token"); // Get the token from sessionStorage
 
@@ -36,17 +37,17 @@ export const MusicPlayerProvider = ({ children }) => {
         setUserId(userDetails.userId);
       }
     }
-  }, []); // Run this effect only once, after component mounts
+  }, []);
 
   // Function to play a specific track
   const playTrack = async (track) => {
-    // Check if the selected track is already playing
+    // Check if the selected track is already playing, just resume it
     if (currentTrack && currentTrack.id === track.id) {
       setIsPlaying(true);
       return;
     }
 
-    // Send listening data if a track was previously playing
+    // Send listening data for the currently playing track
     if (currentTrack) {
       const listeningDuration = listeningStartTime
         ? Math.floor(Date.now() / 1000) - listeningStartTime
@@ -62,8 +63,8 @@ export const MusicPlayerProvider = ({ children }) => {
       await sendListeningData(listeningData);
     }
 
-    // Start playing the new track
-    setListeningStartTime(Math.floor(Date.now() / 1000)); // Set the start time to now
+    // Set start time for the new track
+    setListeningStartTime(Math.floor(Date.now() / 1000));
 
     try {
       // Stop any currently playing track
@@ -80,16 +81,16 @@ export const MusicPlayerProvider = ({ children }) => {
       setCurrentTrack(track);
       setAudioSrc(audioUrl);
       setIsPlaying(true);
-      setCurrentTrackIndex(newIndex); // Update the index
+      setCurrentTrackIndex(newIndex);
     } catch (error) {
       console.error("Error fetching the track:", error);
     }
   };
-
+  // Function to pause the current track
   const pauseTrack = () => {
     setIsPlaying(false);
   };
-
+  // Function to skip to the next track
   const nextTrack = async () => {
     if (trackList.length > 0) {
       // Call sendListeningData for the current track before switching
@@ -108,18 +109,28 @@ export const MusicPlayerProvider = ({ children }) => {
           `User ID: ${userId}, Sending listening data:`,
           listeningData
         ); // Log the data being sent
-        await sendListeningData(listeningData);
+        await sendListeningData(listeningData); // Send data to the server
       }
 
-      const nextIndex = (currentTrackIndex + 1) % trackList.length;
+      let nextIndex;
+      if (shuffle) {
+        // Pick a random track if shuffle mode is enabled
+        nextIndex = Math.floor(Math.random() * trackList.length);
+      } else {
+        // Otherwise, go to the next track in the list
+        nextIndex = (currentTrackIndex + 1) % trackList.length;
+      }
+
+      // Update the current track index and play the new track
       setCurrentTrackIndex(nextIndex);
       playTrack(trackList[nextIndex]);
     }
   };
 
+  // Function to jump back to the previous track
   const previousTrack = async () => {
     if (trackList.length > 0) {
-      // Call sendListeningData for the current track before switching
+      // Send listening data for the current track before switching
       if (currentTrack) {
         const listeningDuration = listeningStartTime
           ? Math.floor(Date.now() / 1000) - listeningStartTime
@@ -137,7 +148,7 @@ export const MusicPlayerProvider = ({ children }) => {
         ); // Log the data being sent
         await sendListeningData(listeningData);
       }
-
+      // Calculate the index for the previous track
       const prevIndex =
         (currentTrackIndex - 1 + trackList.length) % trackList.length;
       setCurrentTrackIndex(prevIndex);
@@ -145,16 +156,17 @@ export const MusicPlayerProvider = ({ children }) => {
     }
   };
 
+  // Toggle shuffle mode on/off
   const toggleShuffle = () => {
     setShuffle(!shuffle);
   };
 
-  // Effect to fetch the list of tracks on component mount
+  // Fetch the list of tracks when the component mounts
   useEffect(() => {
     const fetchTracks = async () => {
       try {
         const response = await getTracks();
-        setTrackList(response.data.sort((a, b) => a.id - b.id));
+        setTrackList(response.data.sort((a, b) => a.id - b.id)); // Sort tracks by ID
       } catch (error) {
         console.error("Error fetching tracks:", error);
       }

@@ -3,27 +3,39 @@ import { Navbar, Nav, Form, FormControl, Dropdown } from "react-bootstrap";
 import LogoutButton from "./Logout";
 import { Link, useLocation } from "react-router-dom";
 import { FaHome, FaBook, FaUser, FaComments } from "react-icons/fa";
-import "../../styles/NavBar.css";
+import "../../../styles/NavBar.css";
 import ChatWindow from "./ChatWindow";
 const logoSrc = "/logo.png";
 
+/**
+ * NavBar component renders the navigation bar with search functionality and chat group toggles.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {string} props.searchQuery - The current search query.
+ * @param {function} props.onSearchChange - Callback function to handle search input changes.
+ * @param {function} props.onSearchSubmit - Callback function to handle search form submission.
+ *
+ * @returns {JSX.Element} The rendered NavBar component.
+ *
+ */
 const NavBar = ({ searchQuery, onSearchChange, onSearchSubmit }) => {
-  const location = useLocation();
+  const location = useLocation(); // Hook to get the current location (URL path)
   const isHomePage = location.pathname === "/home"; // Check if on the homepage
 
-  const [showChats, setShowChats] = useState(false); // State to toggle chat groups
+  const [showChats, setShowChats] = useState(false); // State to control the visibility of the chat dropdown menu
   const [openChats, setOpenChats] = useState([]); // State to track opened chat windows
 
-  // Function for opening window
+  // Function for opening window for a specific chatgroup
   const openChatWindow = (chatGroup) => {
     if (!openChats.includes(chatGroup)) {
-      setOpenChats([...openChats, chatGroup]);
+      setOpenChats([...openChats, chatGroup]); // Add chat group to openChats state
     }
   };
 
   // Function for closing window
   const closeChatWindow = (chatGroup) => {
-    setOpenChats(openChats.filter((chat) => chat !== chatGroup));
+    setOpenChats(openChats.filter((chat) => chat !== chatGroup)); // Remove chat group from openChats state
   };
 
   return (

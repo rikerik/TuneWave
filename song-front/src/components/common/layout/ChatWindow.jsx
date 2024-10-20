@@ -1,18 +1,49 @@
 import React, { useState, useEffect, useRef } from "react";
-import "../../styles/ChatWindow.css";
+import "../../../styles/ChatWindow.css";
 import { FaTimes } from "react-icons/fa";
-import { Stomp } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { getUserDetailsFromToken } from "../../Utils/TokenUtil";
+import { Stomp } from "@stomp/stompjs"; // STOMP protocol for WebSocket communication
+import SockJS from "sockjs-client"; // SockJS client for WebSocket fallback
+import { getUserDetailsFromToken } from "../../../Utils/TokenUtil";
 
+/**
+ * ChatWindow component handles the WebSocket connection and messaging for a chat group.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {string} props.chatGroup - The chat group to connect to.
+ * @param {function} props.onClose - Function to call when the chat window is closed.
+ *
+ * @returns {JSX.Element} The rendered chat window component.
+ *
+ * @example
+ * <ChatWindow chatGroup="group1" onClose={handleClose} />
+ *
+ * @description
+ * This component connects to a WebSocket server using STOMP over SockJS, subscribes to a chat group,
+ * and handles sending and receiving messages. It maintains the state of the current message being typed,
+ * the list of received messages, and the WebSocket client instance.
+ *
+ * @function
+ * @name ChatWindow
+ */
 const ChatWindow = ({ chatGroup, onClose }) => {
+  // State to hold the input message
   const [message, setMessage] = useState("");
+  // State to hold the list of messages received in the chat
   const [messages, setMessages] = useState([]);
-  const stompClient = useRef(null); // Using useRef to hold the stompclient
+
+  // useRef to hold the WebSocket client across renders without causing re-renders
+  const stompClient = useRef(null);
+
+  // Extract user details from the token, default to "User" if not available
   const userDetails = getUserDetailsFromToken();
+
+  //"User" placeholder if somewhy the util wouldn't be able to extract username
   const username = userDetails ? userDetails.username : "User";
 
+  // useEffect to handle WebSocket connection when the chatGroup changes
   useEffect(() => {
+    // Initialize the STOMP client over SockJS
     stompClient.current = Stomp.over(
       () => new SockJS("http://localhost:8080/ws")
     );
@@ -25,27 +56,32 @@ const ChatWindow = ({ chatGroup, onClose }) => {
       onError
     );
 
+    // Clean up function to disconnect WebSocket when the component unmounts
     return () => {
       if (stompClient.current !== null) {
         stompClient.current.disconnect();
         console.log("Disconnected from WebSocket");
       }
     };
-  }, [chatGroup]);
+  });
 
+  // Function to handle WebSocket connection and subscribing to the group
   const onConnected = () => {
     console.log(`Connected to chat group: ${chatGroup}`);
     stompClient.current.subscribe(`/topic/${chatGroup}`, onMessageReceived);
-    console.log(`Subscribed to topic: /topic/${chatGroup}`);
   };
 
+  // Function to handle errors during WebSocket connection
   const onError = (error) => {
     console.error("WebSocket connection error:", error);
   };
 
+  // Function to handle incoming messages
   const onMessageReceived = (payload) => {
-    const receivedMessage = JSON.parse(payload.body);
+    const receivedMessage = JSON.parse(payload.body); //Parse message JSON
     console.log("Received message:", receivedMessage);
+
+    // Add the new message to the messages array if it is not a duplicate
     setMessages((prevMessages) => {
       if (
         prevMessages.length === 0 ||
@@ -56,16 +92,18 @@ const ChatWindow = ({ chatGroup, onClose }) => {
             receivedMessage.sender
         )
       ) {
-        return [...prevMessages, receivedMessage];
+        return [...prevMessages, receivedMessage]; // Add new message
       }
-      return prevMessages;
+      return prevMessages; // Ignore if it's a duplicate message
     });
   };
 
+  // Function to send a message to the server
   const sendMessage = () => {
-    const trimmedMessage = message.trim();
+    const trimmedMessage = message.trim(); // Remove any leading or trailing spaces
     console.log("Attempting to send message:", trimmedMessage);
 
+    // Ensure the STOMP client is connected and the message is not empty
     if (stompClient.current) {
       if (trimmedMessage) {
         const chatMessage = {
@@ -74,11 +112,12 @@ const ChatWindow = ({ chatGroup, onClose }) => {
           content: trimmedMessage,
         };
 
+        // Send the message to the server
         console.log("Sending message:", chatMessage);
         stompClient.current.send(
-          "/app/sendMessage",
-          {},
-          JSON.stringify(chatMessage)
+          "/app/sendMessage", // Destination endpoint on the server
+          {}, // Headers
+          JSON.stringify(chatMessage) // Message payload
         );
         console.log("Message sent, waiting for response...");
 

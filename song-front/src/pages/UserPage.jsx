@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import UserList from "../components/UserList";
-import UserDetail from "../components/UserDetail";
-import NavBar from "../components/common/Navbar";
+import UserList from "../services/UserList";
+import UserDetail from "../services/UserDetail";
+import NavBar from "../components/common/layout/Navbar";
 
 const UserPage = () => {
   return (

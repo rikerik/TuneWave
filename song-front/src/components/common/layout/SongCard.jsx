@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useMusicPlayer } from "../context/MusicPlayerContext";
-import "../../styles/SongCard.css";
+import { useMusicPlayer } from "../../context/MusicPlayerContext";
+import "../../../styles/SongCard.css";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
-import { updateFavoriteStatus } from "../../api/FavoriteApi";
-import { getUserDetailsFromToken } from "../../Utils/TokenUtil";
+import { updateFavoriteStatus } from "../../../api/FavoriteApi";
+import { getUserDetailsFromToken } from "../../../Utils/TokenUtil";
 
 /**
- * Renders a card component for a song.
+ * SongCard component renders a card that displays song information and allows
+ * users to play the song or favorite/unfavorite it.
  *
  * @param {Object} props - The props object.
  * @param {string} props.title - The title of the song.
@@ -18,10 +19,10 @@ import { getUserDetailsFromToken } from "../../Utils/TokenUtil";
  * @returns {JSX.Element} The rendered SongCard component.
  */
 const SongCard = ({ title, artist, imageUrl, id, isFavorited }) => {
-  const { playTrack, currentTrackId } = useMusicPlayer();
-  const [isFavoritedState, setIsFavoritedState] = useState(isFavorited);
+  const { playTrack, currentTrackId } = useMusicPlayer(); // Access the current track ID and playTrack function from the music player context
+  const [isFavoritedState, setIsFavoritedState] = useState(isFavorited); // State to track if the song is favorited
 
-  const userId = getUserDetailsFromToken().userId;
+  const userId = getUserDetailsFromToken().userId; // Get the userId from the token
 
   // Toggle favorite status
   const toggleFavorite = async (e) => {
@@ -30,7 +31,7 @@ const SongCard = ({ title, artist, imageUrl, id, isFavorited }) => {
     // Update the ui
     setIsFavoritedState((prev) => !prev);
 
-    // Call the API to update status
+    // API call to update favorite status in the backend
     try {
       await updateFavoriteStatus(id, !isFavoritedState, userId);
       console.log("Favorite status updated successfully");
@@ -41,7 +42,10 @@ const SongCard = ({ title, artist, imageUrl, id, isFavorited }) => {
     }
   };
 
-  // Function to handle play action when the card is clicked
+  /**
+   * Handles the play action when the song card is clicked.
+   * Passes the current track details to the playTrack function from the context.
+   */
   const handlePlay = () => {
     playTrack({ id, title, artist });
   };
@@ -80,15 +84,6 @@ const SongCard = ({ title, artist, imageUrl, id, isFavorited }) => {
       )}
     </div>
   );
-};
-
-// Prop types for the component
-SongCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  artist: PropTypes.string.isRequired,
-  imageUrl: PropTypes.string,
-  id: PropTypes.number.isRequired,
-  isFavorited: PropTypes.bool,
 };
 
 export default SongCard;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllUsers } from "../services/UserService";
+import { getAllUsers } from "./UserService";
 
 // Component for displaying a list of users
 const UserList = () => {

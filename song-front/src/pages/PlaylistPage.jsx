@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getTracksByPlaylistId } from "../api/musicApi";
-import SongCard from "../components/common/SongCard";
-import Navbar from "../components/common/Navbar";
+import SongCard from "../components/common/layout/SongCard";
+import Navbar from "../components/common/layout/Navbar";
 
 const PlaylistPage = ({ playlistId }) => {
   const [tracks, setTracks] = useState([]);

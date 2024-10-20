@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getFavoriteTracksByUserId, getSavedTracks } from "../api/FavoriteApi";
-import SongCard from "../components/common/SongCard";
-import Navbar from "../components/common/Navbar";
+import SongCard from "../components/common/layout/SongCard";
+import Navbar from "../components/common/layout/Navbar";
 import { getUserDetailsFromToken } from "../Utils/TokenUtil";
 
 const LibraryPage = () => {

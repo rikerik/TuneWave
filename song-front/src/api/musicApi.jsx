@@ -6,12 +6,7 @@ export const getPlaylists = () => api.get("/music/playlists");
 // Function to fetch all tracks
 export const getTracks = () => api.get("/music/tracks");
 
-/**
- * Retrieves tracks by playlist ID.
- *
- * @param {string} playlistId - The ID of the playlist.
- * @returns {Promise} A promise that resolves to the tracks associated with the playlist.
- */
+// Retrieves tracks by playlist ID
 export const getTracksByPlaylistId = (playlistId) =>
   api.get(`/music/tracks/playlist/${playlistId}`);
 

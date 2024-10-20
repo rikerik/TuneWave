@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUserById } from "../services/UserService";
+import { getUserById } from "./UserService";
 import { useParams } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 

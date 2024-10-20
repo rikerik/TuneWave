@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/common/Navbar";
+import Navbar from "../components/common/layout/Navbar";
 import { updateUserProfile } from "../services/ProfileService";
 import { getUserDetailsFromToken } from "../Utils/TokenUtil";
 import {
