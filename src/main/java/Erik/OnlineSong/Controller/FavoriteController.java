@@ -30,6 +30,7 @@ public class FavoriteController {
         this.favoriteService = favoriteService;
     }
 
+    // Endpoint to update the favorite status of a track for a user
     @PostMapping("/favorites")
     public ResponseEntity<String> updateFavoriteStatus(
             @RequestBody FavoriteRequestDTO favoriteRequest,
@@ -38,9 +39,11 @@ public class FavoriteController {
             log.info("FavoriteRequest: " + favoriteRequest);
             log.info("UserId: " + userId);
 
+            // Call the service to update favorite status and capture the result
             boolean updateSuccess = favoriteService.updateFavoriteStatus(userId, favoriteRequest.getSongId(),
                     favoriteRequest.isFavorited());
 
+            // Check if the update was successful and return appropriate response
             if (updateSuccess) {
                 return ResponseEntity.ok("Favorite status updated successfully.");
             } else {
@@ -54,6 +57,7 @@ public class FavoriteController {
         }
     }
 
+    // Endpoint to get favorite tracks for a user
     @GetMapping("/favorites/{userId}")
     public ResponseEntity<List<Track>> getFavoriteTracks(@PathVariable Integer userId) {
         List<Track> favoriteTracks = favoriteService.getFavoriteTracks(userId);
@@ -64,6 +68,8 @@ public class FavoriteController {
         }
     }
 
+    // Endpoint to get saved track IDs for a user
+    // The saved tracks are the ones which displays heart on the cards
     @GetMapping("/favorites/saved/{userId}")
     public ResponseEntity<List<Integer>> getSaved(@PathVariable Integer userId) {
         return ResponseEntity.ok(favoriteService.getSavedTracks(userId));

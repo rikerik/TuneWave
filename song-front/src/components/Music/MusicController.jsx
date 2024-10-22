@@ -5,38 +5,47 @@ import { FiMusic, FiShuffle } from "react-icons/fi";
 import { FaPlay, FaPause, FaStepForward, FaStepBackward } from "react-icons/fa";
 import { getLyrics } from "../../api/lyricsApi";
 import Visualizer from "./Visualizer";
+
+// The MusicController component controls playback, volume, and displays track info
 const MusicController = () => {
+  // audioRef is a reference to the audio element to manage playback
   const audioRef = useRef(null);
 
+  // Destructure various state values and functions from MusicPlayerContext
   const {
-    currentTrack,
-    isPlaying,
-    playTrack,
-    pauseTrack,
-    audioSrc,
-    nextTrack,
-    previousTrack,
-    shuffle,
-    toggleShuffle,
+    currentTrack, // Current track being played
+    isPlaying, // Boolean indicating if a track is playing
+    playTrack, // Function to play the current track
+    pauseTrack, // Function to pause the current track
+    audioSrc, // Audio source for the current track
+    nextTrack, // Function to skip to the next track
+    previousTrack, // Function to go back to the previous track
+    shuffle, // Boolean indicating shuffle state
+    toggleShuffle, // Function to toggle shuffle mode
   } = useMusicPlayer();
 
-  const [volume, setVolume] = useState(0.5);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [showLyrics, setShowLyrics] = useState(false);
-  const [lyrics, setLyrics] = useState("");
-  const [loading, setLoading] = useState(false);
+  // Component state for volume, current playback time, track duration, lyrics, etc
+  const [volume, setVolume] = useState(0.5); // Audio volume
+  const [currentTime, setCurrentTime] = useState(0); // Current playback time
+  const [duration, setDuration] = useState(0); // Duration of the track
+  const [showLyrics, setShowLyrics] = useState(false); // State to control lyrics modal visibility
+  const [lyrics, setLyrics] = useState(""); // Lyrics of the current track
+  const [loading, setLoading] = useState(false); // Loading state for lyrics fetch
 
+  // Effect to handle audio playback when play/pause and track change happens
   useEffect(() => {
     const audio = audioRef.current;
 
     if (audio) {
+      // Set the volume for the audio element
       audio.volume = volume;
 
+      // Load a new track if the audioSrc changes
       if (audioSrc !== audio.src) {
         audio.src = audioSrc;
         audio.load();
         if (isPlaying) {
+          // Play the track if the isPlaying flag is true
           audio
             .play()
             .catch((error) => console.error("Playback error:", error));
@@ -46,31 +55,38 @@ const MusicController = () => {
       } else {
         audio.pause();
       }
-
+      // Event listener to move to the next track when the current one ends
       const handleEnded = () => {
         nextTrack();
       };
       audio.addEventListener("ended", handleEnded);
 
+      // Cleanup the event listener when component unmounts
       return () => {
         audio.removeEventListener("ended", handleEnded);
       };
     }
   }, [isPlaying, audioSrc, volume, nextTrack]);
 
+  // Effect to handle updating the currentTime and duration when the audio plays or loads
   useEffect(() => {
     const audio = audioRef.current;
 
     if (audio) {
+      // Updates currentTime as the track progresses
+
       const updateTime = () => setCurrentTime(audio.currentTime);
+      // Sets the audio data (duration, current time) when the track loads
       const setAudioData = () => {
         setDuration(audio.duration);
         setCurrentTime(audio.currentTime);
       };
 
+      // Event listeners for time updates and track data loading
       audio.addEventListener("timeupdate", updateTime);
       audio.addEventListener("loadeddata", setAudioData);
 
+      // Cleanup event listeners on component unmount
       return () => {
         audio.removeEventListener("timeupdate", updateTime);
         audio.removeEventListener("loadeddata", setAudioData);
@@ -78,10 +94,12 @@ const MusicController = () => {
     }
   }, [audioSrc]);
 
+  // Handle changes to the volume slider.
   const handleVolumeChange = (e) => {
     setVolume(parseFloat(e.target.value));
   };
 
+  // Handle seeking within the track using the progress bar
   const handleSeek = (e) => {
     const seekTime = parseFloat(e.target.value);
     if (audioRef.current) {
@@ -90,6 +108,7 @@ const MusicController = () => {
     }
   };
 
+  // Handle showing the lyrics modal and fetching lyrics data.
   const handleShowLyrics = async () => {
     setShowLyrics(true);
     setLoading(true);
@@ -110,7 +129,7 @@ const MusicController = () => {
       setLoading(false);
     }
   };
-
+  // Close the lyrics modal.
   const handleCloseLyrics = () => setShowLyrics(false);
 
   return (

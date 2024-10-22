@@ -14,11 +14,12 @@ import {
   LinearScale,
   BarElement,
   Title,
-} from "chart.js";
+} from "chart.js"; //Chart.js libary for rendering charts
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title); // Register necessary Chart.js components
 
 const ProfilePage = () => {
+  // State to store profile data (first name, last name, etc.)
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
@@ -27,9 +28,11 @@ const ProfilePage = () => {
     profilePicture: null,
   });
 
+  // State to store profile data (first name, last name, etc.)
   const [weeklyListeningTime, setWeeklyListeningTime] = useState(0);
   const [favoriteArtists, setFavoriteArtists] = useState([]);
 
+  // useEffect hook to fetch user data (listening time and favorite artists) when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -49,6 +52,7 @@ const ProfilePage = () => {
     fetchData();
   }, []);
 
+  // Handle changes to input fields (first name, last name, etc.)
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({
@@ -57,6 +61,7 @@ const ProfilePage = () => {
     }));
   };
 
+  // Handle changes to file input (profile picture)
   const handleFileChange = (e) => {
     setProfileData((prevData) => ({
       ...prevData,
@@ -66,7 +71,7 @@ const ProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
+    const formData = new FormData(); // FormData to handle file upload
     if (profileData.firstName)
       formData.append("firstName", profileData.firstName);
     if (profileData.lastName) formData.append("lastName", profileData.lastName);
@@ -85,17 +90,18 @@ const ProfilePage = () => {
     }
   };
 
-  // Chart data for favorite artists
-  const artistNames = favoriteArtists.map((artist) => artist[0]);
-  const artistTimes = favoriteArtists.map((artist) => artist[1] / 60);
+  // Prepare data for the chart showing favorite artists
+  const artistNames = favoriteArtists.map((artist) => artist[0]); // Extract artist names
+  const artistTimes = favoriteArtists.map((artist) => artist[1] / 60); // Convert artist listening time to minutes
 
+  // Data to be used in the bar chart
   const chartData = {
-    labels: artistNames,
+    labels: artistNames, // X-axis labels
     datasets: [
       {
-        label: "Minutes Listened",
-        data: artistTimes,
-        backgroundColor: ["rgba(75, 192, 192, 0.6)"],
+        label: "Minutes Listened", // Label for the dataset
+        data: artistTimes, // Y-axis data
+        backgroundColor: ["rgba(75, 192, 192, 0.6)"], // Bar color
       },
     ],
   };

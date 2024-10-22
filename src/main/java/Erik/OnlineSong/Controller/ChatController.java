@@ -15,6 +15,7 @@ public class ChatController {
         this.messagingTemplate = messagingTemplate;
     }
 
+    // Endpoint for sending a message
     @MessageMapping("/sendMessage")
     public void sendMessage(ChatMessage chatMessage) {
         // Sending the message to specific topic

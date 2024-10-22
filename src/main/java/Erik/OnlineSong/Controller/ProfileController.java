@@ -22,6 +22,7 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
+    // Endpoint to update user profile
     @PutMapping("/update/{userId}")
     public ResponseEntity<?> updateProfile(@PathVariable Integer userId,
             @RequestParam(value = "firstName", required = false) String firstName,

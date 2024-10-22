@@ -18,6 +18,7 @@ public class ListeningDataController {
         this.listeningDataService = listeningDataService;
     }
 
+    // Endpoint to send listening data
     @PostMapping("/statistics")
     public ResponseEntity<Void> sendListeningData(@RequestBody ListeningDataDTO listeningDataDTO) {
         // Call the service to handle the listening data
@@ -25,13 +26,13 @@ public class ListeningDataController {
         return ResponseEntity.ok().build();
     }
 
+    // Endpoint to get total listening time for a user for the current week
     @GetMapping("/users/{userId}/listening-time/week")
     public int getTotalListeningTimeForWeek(@PathVariable Integer userId) {
-        System.out.println("USERID IN CONTROLLER: " + userId);
-        // Call the service to get the total listening minutes for the week
         return listeningDataService.getTotalListeningMinutesForWeek(userId);
     }
 
+    // Endpoint to get favorite artists for a user
     @GetMapping("/users/{userId}/favorite-artists")
     public List<Object[]> getFavoriteArtists(@PathVariable Integer userId) {
         return listeningDataService.getFavoriteArtistsByUserId(userId);

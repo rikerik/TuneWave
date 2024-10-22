@@ -4,6 +4,8 @@ import SongCard from "../components/common/layout/SongCard";
 import Navbar from "../components/common/layout/Navbar";
 import { getUserDetailsFromToken } from "../Utils/TokenUtil";
 
+// Component for displaying the LibraryPage
+
 const LibraryPage = () => {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,21 +17,25 @@ const LibraryPage = () => {
     if (userId) {
       const fetchFavoriteTracks = async () => {
         try {
+          // Fetch favorite tracks of the user by user ID
           const response = await getFavoriteTracksByUserId(userId);
           setTracks(response.data);
+          // Fetch the list of saved track IDs for the user
           const savedTracksResponse = await getSavedTracks(userId);
           setSavedTrackIds(savedTracksResponse.data);
         } catch (error) {
           console.error("Error fetching favorite tracks:", error);
         } finally {
+          // The loading spinner turns off, once the fetching is complete
+
           setLoading(false);
         }
       };
-
+      // Call the function to fetch favorite tracks
       fetchFavoriteTracks();
     } else {
       console.error("User ID is missing");
-      setLoading(false);
+      setLoading(false); // Loading is stopped if user ID is missing
     }
   }, []); // Dependency array is empty to run the effect only once on mount
 

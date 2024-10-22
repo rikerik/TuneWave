@@ -3,18 +3,21 @@ import { getTracksByPlaylistId } from "../api/musicApi";
 import SongCard from "../components/common/layout/SongCard";
 import Navbar from "../components/common/layout/Navbar";
 
+// Component for rendering the PlaylistPage
+
 const PlaylistPage = ({ playlistId }) => {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!playlistId) {
-      console.error("Playlist ID is missing");
+      console.error("Playlist ID is missing"); // Log an error if no playlist ID is provided
       return;
     }
 
     const fetchTracks = async () => {
       try {
+        // Fetch the tracks for the playlist by playlist ID
         const response = await getTracksByPlaylistId(playlistId);
         setTracks(response.data);
       } catch (error) {
@@ -25,8 +28,8 @@ const PlaylistPage = ({ playlistId }) => {
       }
     };
 
-    fetchTracks();
-  }, [playlistId]);
+    fetchTracks(); // Call the function to fetch tracks
+  }, [playlistId]); // Dependency on playlistId to refetch tracks when the ID changes
 
   return (
     <div className="content-below-navbar">

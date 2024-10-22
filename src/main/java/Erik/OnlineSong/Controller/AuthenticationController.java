@@ -23,6 +23,7 @@ public class AuthenticationController {
         this.service = service;
     }
 
+    // Endpoint for user registration
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody User request) throws FileNotFoundException, IOException {
@@ -30,6 +31,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.register(request));
     }
 
+    // Endpoint for user login
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody User request) {

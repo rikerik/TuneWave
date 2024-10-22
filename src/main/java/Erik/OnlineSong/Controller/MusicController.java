@@ -33,11 +33,13 @@ public class MusicController {
         this.s3Client = s3Client;
     }
 
+    // Endpoint to get all playlists
     @GetMapping("/playlists")
     public List<Playlist> getAllPlaylists() {
         return playlistRepository.findAll();
     }
 
+    // Endpoint to get all tracks
     @GetMapping("/tracks")
     public ResponseEntity<List<Track>> getAllTracks() {
         List<Track> tracks = trackRepository.findAll();
@@ -47,6 +49,7 @@ public class MusicController {
         return ResponseEntity.ok(tracks);
     }
 
+    // Endpoint to get tracks by playlist ID
     @GetMapping("/tracks/playlist/{playlistId}")
     public ResponseEntity<List<Track>> getTracksByPlaylistId(@PathVariable Integer playlistId) {
         List<Track> tracks = trackRepository.findByPlaylistId(playlistId);
@@ -56,6 +59,7 @@ public class MusicController {
         return ResponseEntity.ok(tracks);
     }
 
+    // Endpoint to get a specific track by ID
     @GetMapping("/tracks/{id}")
     public ResponseEntity<Resource> getTrack(@PathVariable Integer id) {
         // Fetch the track from the repository
@@ -68,15 +72,17 @@ public class MusicController {
         Track track = optionalTrack.get();
 
         try {
-            // Fetch the S3 object
+            // Fetch the S3 object corresponding to the track location
             S3Object s3Object = s3Client.getObject(new GetObjectRequest("tunewave", track.getLocation()));
             InputStream inputStream = s3Object.getObjectContent();
 
+            // Determine the media type based on the file extension
             MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
             if (track.getLocation().endsWith(".mp3")) {
                 mediaType = MediaType.valueOf("audio/mpeg");
             }
 
+            // Return the audio stream as a response with the appropriate media type
             return ResponseEntity.ok()
                     .contentType(mediaType)
                     .body(new InputStreamResource(inputStream));

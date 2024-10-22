@@ -50,28 +50,40 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         req -> req.requestMatchers("/login/**", "/register/**", "/ws/**") // Allow access to WebSocket
                                 .permitAll()
-                                .requestMatchers("/admin_only/**").hasAnyAuthority("ADMIN")
-                                .anyRequest()
+                                .requestMatchers("/admin_only/**").hasAnyAuthority("ADMIN") // Only allow access to
+                                                                                            // admin users
+                                .anyRequest() // All other requests require authentication
                                 .authenticated())
-                .userDetailsService(userDetailsServiceImp)
+                .userDetailsService(userDetailsServiceImp) // Specify the user details service
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Set session management to stateless
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add the JWT
+                                                                                                      // filter before
+                                                                                                      // the default
+                                                                                                      // username/password
+                                                                                                      // authentication
+                                                                                                      // filter
                 .logout(l -> l.logoutUrl("/logout")
-                        .addLogoutHandler(logoutHandler)
+                        .addLogoutHandler(logoutHandler) // Add the custom logout handler
                         .logoutSuccessHandler(
-                                (request, response, authentication) -> SecurityContextHolder.clearContext()))
+                                (request, response, authentication) -> SecurityContextHolder.clearContext())) // Clear
+                                                                                                              // the
+                                                                                                              // security
+                                                                                                              // context
+                                                                                                              // on
+                                                                                                              // successful
+                                                                                                              // logout
                 .build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Password encoder bean using BCrypt
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+        return configuration.getAuthenticationManager(); // Authentication manager bean
     }
 
     @Bean
@@ -79,11 +91,12 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                // Allow requests from the specified origin
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowedOrigins("http://localhost:3000") // Allow requests from the frontend
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Specify allowed HTTP methods
+                        .allowedHeaders("*") // Allow all headers
+                        .allowCredentials(true); // Allow credentials in CORS requests
             }
         };
     }

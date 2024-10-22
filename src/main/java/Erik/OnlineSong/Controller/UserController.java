@@ -22,22 +22,28 @@ public class UserController {
         this.repository = repository;
     }
 
+    // Endpoint to get all users
     @GetMapping("/users")
     public List<UserDTO> getAllUsers() {
         List<User> users = repository.findAll();
-        return users.stream()
-                .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(),
+        return users.stream() // Stream the list of users
+                .map(user -> new UserDTO( // Map each User to UserDTO
+                        user.getId(),
+                        user.getUsername(),
+                        user.getFirstName(),
+                        user.getLastName(),
                         user.getRole()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); // Collect the UserDTOs into a list
     }
 
+    // Endpoint to get a user by ID
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable("id") Integer id) {
         return repository.findById(id)
                 .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(),
                         user.getRole()))
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(ResponseEntity::ok)// If found, return UserDTO in response
+                .orElseGet(() -> ResponseEntity.notFound().build()); // If not found, return 404 Not Found
     }
 
 }

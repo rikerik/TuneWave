@@ -5,14 +5,17 @@ import "../styles/Form.css";
 
 // Component for handling the user registration form
 const RegisterForm = () => {
+  // State variables to store user input
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
 
+  // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the default form submission
     try {
+      // Make a call to the register function with the entered user data
       const response = await register({
         username,
         password,
@@ -20,10 +23,11 @@ const RegisterForm = () => {
         lastName,
       });
 
+      // If registration is successful, store the token in sessionStorage and redirect to the home page
       if (response.status === 200) {
         const { token } = response.data;
-        sessionStorage.setItem("token", token);
-        window.location.href = "/home";
+        sessionStorage.setItem("token", token); //Save token
+        window.location.href = "/home"; // Redirect to the home page after successful registration
       } else {
         console.error("Registration failed", response.status);
       }

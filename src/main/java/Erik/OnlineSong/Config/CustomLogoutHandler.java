@@ -22,25 +22,27 @@ public class CustomLogoutHandler implements LogoutHandler {
     public void logout(HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) {
+        // Get the Authorization header from the request
         String authHeader = request.getHeader("Authorization");
 
+        // Check if the Authorization header is present and starts with "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
+            return; // Exit if not
         }
 
         // Substring to remove "Bearer " from the token
         String token = authHeader.substring(7);
 
+        // Retrieve the Token object from the database using the token string
         Token storedToken = tokenRepository.findByToken(token).orElse(null);
 
+        // Retrieve the Token object from the database using the token string
         if (token != null) {
+            // Mark the token as logged out
             storedToken.setLoggedOut(true);
+            // Save the updated token status in the repository
             tokenRepository.save(storedToken);
         }
-
-        // get stored token from db
-        // invalidate token
-        // save token
     }
 
 }

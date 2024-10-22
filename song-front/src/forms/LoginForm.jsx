@@ -5,20 +5,24 @@ import "../styles/Form.css";
 
 // Component for handling the user login form
 const LoginForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  // State variables to store user input and potential error messages
+  const [username, setUsername] = useState(""); // Store the entered username
+  const [password, setPassword] = useState(""); // Store the entered password
+  const [error, setError] = useState(""); // Store error messages if login fails
 
+  // Function to handle form submission
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // Prevent default form submission behavior
 
     try {
+      // Attempt to log in the user with the provided credentials
       const response = await login({ username, password });
 
+      // If login is successful, store the token in sessionStorage and redirect to the home page
       if (response.status === 200) {
         const { token } = response.data;
-        sessionStorage.setItem("token", token);
-        window.location.href = "/library";
+        sessionStorage.setItem("token", token); // Save the JWT token
+        window.location.href = "/home"; // Redirect user to the home page
       } else {
         setError("Invalid username or password");
       }

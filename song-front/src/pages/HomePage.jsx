@@ -6,19 +6,23 @@ import { getPlaylists, getTracks } from "../api/musicApi";
 import { getSavedTracks } from "../api/FavoriteApi";
 import { getUserDetailsFromToken } from "../Utils/TokenUtil";
 
+// Component for displaying the HomePage
+
 const HomePage = () => {
+  // State variables to store fetched playlists, tracks, saved track IDs, and the loading status
   const [tracks, setTracks] = useState([]);
   const [playlists, setPlaylists] = useState([]);
   const [savedTrackIds, setSavedTrackIds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // Stores the search query from the user input
 
+  // Fetch playlists, tracks, and saved tracks when the component is mounted
   useEffect(() => {
     const fetchPlaylistsAndTracks = async () => {
       try {
         // Fetch playlists
         const playlistResponse = await getPlaylists();
-        setPlaylists(playlistResponse.data);
+        setPlaylists(playlistResponse.data); // Set playlists in state
 
         // Fetch tracks
         const trackResponse = await getTracks();
@@ -27,6 +31,7 @@ const HomePage = () => {
         // Fetch saved tracks
         const userId = getUserDetailsFromToken().userId; // Get user ID from token
 
+        // If the user is logged in, fetch their saved tracks
         if (userId) {
           const savedTracksResponse = await getSavedTracks(userId);
           setSavedTrackIds(savedTracksResponse.data);
@@ -38,10 +43,12 @@ const HomePage = () => {
       } catch (error) {
         console.error("Error fetching saved tracks:", error);
       } finally {
+        // The loading spinner turns off, once the fetching is complete
         setLoading(false);
       }
     };
 
+    // Call the function to fetch playlists and tracks
     fetchPlaylistsAndTracks();
   }, []);
 
@@ -50,6 +57,7 @@ const HomePage = () => {
     if (searchQuery.trim() === "") {
       return true; // If search is empty, display all playlists
     }
+    // Check if the playlist title matches the search query (case-insensitive)
     return playlist.title.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -58,6 +66,7 @@ const HomePage = () => {
     if (searchQuery.trim() === "") {
       return true; // If search is empty, display all tracks
     }
+    // Check if the track title or artist matches the search query (case-insensitive)
     return (
       track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       track.artist.toLowerCase().includes(searchQuery.toLowerCase())
